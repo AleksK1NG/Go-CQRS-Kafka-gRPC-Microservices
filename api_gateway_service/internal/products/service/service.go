@@ -18,11 +18,12 @@ func NewProductService(log logger.Logger, cfg *config.Config, kafkaProducer kafk
 
 	createProductHandler := commands.NewCreateProductHandler(log, cfg, kafkaProducer)
 	updateProductHandler := commands.NewUpdateProductHandler(log, cfg, kafkaProducer)
+	deleteProductHandler := commands.NewDeleteProductHandler(log, cfg, kafkaProducer)
 
 	getProductByIdHandler := queries.NewGetProductByIdHandler(log, cfg, rsClient)
 	searchProductHandler := queries.NewSearchProductHandler(log, cfg, rsClient)
 
-	productCommands := commands.NewProductCommands(createProductHandler, updateProductHandler)
+	productCommands := commands.NewProductCommands(createProductHandler, updateProductHandler, deleteProductHandler)
 	productQueries := queries.NewProductQueries(getProductByIdHandler, searchProductHandler)
 
 	return &ProductService{Commands: productCommands, Queries: productQueries}

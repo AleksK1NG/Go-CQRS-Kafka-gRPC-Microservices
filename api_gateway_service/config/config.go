@@ -49,6 +49,7 @@ type Grpc struct {
 type KafkaTopics struct {
 	ProductCreate kafka.TopicConfig `mapstructure:"productCreate"`
 	ProductUpdate kafka.TopicConfig `mapstructure:"productUpdate"`
+	ProductDelete kafka.TopicConfig `mapstructure:"productDelete"`
 }
 
 func InitConfig() (*Config, error) {

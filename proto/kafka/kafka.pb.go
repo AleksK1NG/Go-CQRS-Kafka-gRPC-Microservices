@@ -344,6 +344,100 @@ func (x *ProductUpdated) GetProduct() *Product {
 	return nil
 }
 
+type ProductDelete struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ProductID string `protobuf:"bytes,1,opt,name=ProductID,proto3" json:"ProductID,omitempty"`
+}
+
+func (x *ProductDelete) Reset() {
+	*x = ProductDelete{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_kafka_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ProductDelete) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProductDelete) ProtoMessage() {}
+
+func (x *ProductDelete) ProtoReflect() protoreflect.Message {
+	mi := &file_kafka_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProductDelete.ProtoReflect.Descriptor instead.
+func (*ProductDelete) Descriptor() ([]byte, []int) {
+	return file_kafka_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ProductDelete) GetProductID() string {
+	if x != nil {
+		return x.ProductID
+	}
+	return ""
+}
+
+type ProductDeleted struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ProductID string `protobuf:"bytes,1,opt,name=ProductID,proto3" json:"ProductID,omitempty"`
+}
+
+func (x *ProductDeleted) Reset() {
+	*x = ProductDeleted{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_kafka_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ProductDeleted) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProductDeleted) ProtoMessage() {}
+
+func (x *ProductDeleted) ProtoReflect() protoreflect.Message {
+	mi := &file_kafka_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProductDeleted.ProtoReflect.Descriptor instead.
+func (*ProductDeleted) Descriptor() ([]byte, []int) {
+	return file_kafka_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ProductDeleted) GetProductID() string {
+	if x != nil {
+		return x.ProductID
+	}
+	return ""
+}
+
 var File_kafka_proto protoreflect.FileDescriptor
 
 var file_kafka_proto_rawDesc = []byte{
@@ -389,9 +483,14 @@ var file_kafka_proto_rawDesc = []byte{
 	0x74, 0x65, 0x64, 0x12, 0x30, 0x0a, 0x07, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x18, 0x01,
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x6b, 0x61, 0x66, 0x6b, 0x61, 0x4d, 0x65, 0x73, 0x73,
 	0x61, 0x67, 0x65, 0x73, 0x2e, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x07, 0x50, 0x72,
-	0x6f, 0x64, 0x75, 0x63, 0x74, 0x42, 0x12, 0x5a, 0x10, 0x2e, 0x2f, 0x3b, 0x6b, 0x61, 0x66, 0x6b,
-	0x61, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x6f, 0x64, 0x75, 0x63, 0x74, 0x22, 0x2d, 0x0a, 0x0d, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74,
+	0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x1c, 0x0a, 0x09, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63,
+	0x74, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x50, 0x72, 0x6f, 0x64, 0x75,
+	0x63, 0x74, 0x49, 0x44, 0x22, 0x2e, 0x0a, 0x0e, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x44,
+	0x65, 0x6c, 0x65, 0x74, 0x65, 0x64, 0x12, 0x1c, 0x0a, 0x09, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63,
+	0x74, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x50, 0x72, 0x6f, 0x64, 0x75,
+	0x63, 0x74, 0x49, 0x44, 0x42, 0x12, 0x5a, 0x10, 0x2e, 0x2f, 0x3b, 0x6b, 0x61, 0x66, 0x6b, 0x61,
+	0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -406,18 +505,20 @@ func file_kafka_proto_rawDescGZIP() []byte {
 	return file_kafka_proto_rawDescData
 }
 
-var file_kafka_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_kafka_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_kafka_proto_goTypes = []interface{}{
 	(*ProductCreate)(nil),         // 0: kafkaMessages.ProductCreate
 	(*ProductUpdate)(nil),         // 1: kafkaMessages.ProductUpdate
 	(*Product)(nil),               // 2: kafkaMessages.Product
 	(*ProductCreated)(nil),        // 3: kafkaMessages.ProductCreated
 	(*ProductUpdated)(nil),        // 4: kafkaMessages.ProductUpdated
-	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
+	(*ProductDelete)(nil),         // 5: kafkaMessages.ProductDelete
+	(*ProductDeleted)(nil),        // 6: kafkaMessages.ProductDeleted
+	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
 }
 var file_kafka_proto_depIdxs = []int32{
-	5, // 0: kafkaMessages.Product.CreatedAt:type_name -> google.protobuf.Timestamp
-	5, // 1: kafkaMessages.Product.UpdatedAt:type_name -> google.protobuf.Timestamp
+	7, // 0: kafkaMessages.Product.CreatedAt:type_name -> google.protobuf.Timestamp
+	7, // 1: kafkaMessages.Product.UpdatedAt:type_name -> google.protobuf.Timestamp
 	2, // 2: kafkaMessages.ProductCreated.Product:type_name -> kafkaMessages.Product
 	2, // 3: kafkaMessages.ProductUpdated.Product:type_name -> kafkaMessages.Product
 	4, // [4:4] is the sub-list for method output_type
@@ -493,6 +594,30 @@ func file_kafka_proto_init() {
 				return nil
 			}
 		}
+		file_kafka_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ProductDelete); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_kafka_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ProductDeleted); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -500,7 +625,7 @@ func file_kafka_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_kafka_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

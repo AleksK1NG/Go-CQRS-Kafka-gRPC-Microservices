@@ -37,3 +37,11 @@ message ProductCreated {
 message ProductUpdated {
   Product Product = 1;
 }
+
+message ProductDelete {
+  string ProductID = 1;
+}
+
+message ProductDeleted {
+  string ProductID = 1;
+}
