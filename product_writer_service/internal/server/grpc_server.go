@@ -47,7 +47,7 @@ func (s *server) newWriterGrpcServer() (func() error, *grpc.Server, error) {
 		),
 	)
 
-	writerGrpcWriter := grpc2.NewWriterGrpcService(s.log, s.cfg, s.v, s.ps)
+	writerGrpcWriter := grpc2.NewWriterGrpcService(s.log, s.cfg, s.v, s.ps, s.metrics)
 	writerService.RegisterWriterServiceServer(grpcServer, writerGrpcWriter)
 	grpc_prometheus.Register(grpcServer)
 

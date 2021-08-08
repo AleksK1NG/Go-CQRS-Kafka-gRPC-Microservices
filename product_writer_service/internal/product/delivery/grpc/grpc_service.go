@@ -5,6 +5,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/config"
+	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/metrics"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/commands"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/queries"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/service"
@@ -17,17 +18,20 @@ import (
 )
 
 type grpcService struct {
-	log logger.Logger
-	cfg *config.Config
-	v   *validator.Validate
-	ps  *service.ProductService
+	log     logger.Logger
+	cfg     *config.Config
+	v       *validator.Validate
+	ps      *service.ProductService
+	metrics *metrics.WriterServiceMetrics
 }
 
-func NewWriterGrpcService(log logger.Logger, cfg *config.Config, v *validator.Validate, ps *service.ProductService) *grpcService {
-	return &grpcService{log: log, cfg: cfg, v: v, ps: ps}
+func NewWriterGrpcService(log logger.Logger, cfg *config.Config, v *validator.Validate, ps *service.ProductService, metrics *metrics.WriterServiceMetrics) *grpcService {
+	return &grpcService{log: log, cfg: cfg, v: v, ps: ps, metrics: metrics}
 }
 
 func (s *grpcService) CreateProduct(ctx context.Context, req *writerService.CreateProductReq) (*writerService.CreateProductRes, error) {
+	s.metrics.CreateProductGrpcRequests.Inc()
+
 	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.CreateProduct")
 	defer span.Finish()
 
@@ -49,10 +53,13 @@ func (s *grpcService) CreateProduct(ctx context.Context, req *writerService.Crea
 		return nil, s.errResponse(codes.Internal, err)
 	}
 
+	s.metrics.SuccessGrpcRequests.Inc()
 	return &writerService.CreateProductRes{ProductID: productUUID.String()}, nil
 }
 
 func (s *grpcService) UpdateProduct(ctx context.Context, req *writerService.UpdateProductReq) (*writerService.UpdateProductRes, error) {
+	s.metrics.UpdateProductGrpcRequests.Inc()
+
 	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.UpdateProduct")
 	defer span.Finish()
 
@@ -74,10 +81,13 @@ func (s *grpcService) UpdateProduct(ctx context.Context, req *writerService.Upda
 		return nil, s.errResponse(codes.Internal, err)
 	}
 
+	s.metrics.SuccessGrpcRequests.Inc()
 	return &writerService.UpdateProductRes{}, nil
 }
 
 func (s *grpcService) GetProductById(ctx context.Context, req *writerService.GetProductByIdReq) (*writerService.GetProductByIdRes, error) {
+	s.metrics.GetProductByIdGrpcRequests.Inc()
+
 	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.GetProductById")
 	defer span.Finish()
 
@@ -99,9 +109,11 @@ func (s *grpcService) GetProductById(ctx context.Context, req *writerService.Get
 		return nil, s.errResponse(codes.Internal, err)
 	}
 
+	s.metrics.SuccessGrpcRequests.Inc()
 	return &writerService.GetProductByIdRes{Product: mappers.WriterProductToGrpc(product)}, nil
 }
 
 func (s *grpcService) errResponse(c codes.Code, err error) error {
+	s.metrics.ErrorGrpcRequests.Inc()
 	return status.Error(c, err.Error())
 }

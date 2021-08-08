@@ -8,6 +8,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/postgres"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/config"
+	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/metrics"
 	kafkaConsumer "github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/delivery/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/repository"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/service"
@@ -29,6 +30,7 @@ type server struct {
 	ps        *service.ProductService
 	im        interceptors.InterceptorManager
 	pgConn    *pgxpool.Pool
+	metrics   *metrics.WriterServiceMetrics
 }
 
 func NewServer(log logger.Logger, cfg *config.Config) *server {
@@ -40,6 +42,7 @@ func (s *server) Run() error {
 	defer cancel()
 
 	s.im = interceptors.NewInterceptorManager(s.log)
+	s.metrics = metrics.NewWriterServiceMetrics(s.cfg)
 
 	pgxConn, err := postgres.NewPgxConn(s.cfg.Postgresql)
 	if err != nil {
@@ -54,7 +57,7 @@ func (s *server) Run() error {
 
 	productRepo := repository.NewProductRepository(s.log, s.cfg, pgxConn)
 	s.ps = service.NewProductService(s.log, s.cfg, productRepo, kafkaProducer)
-	productMessageProcessor := kafkaConsumer.NewProductMessageProcessor(s.log, s.cfg, s.v, s.ps)
+	productMessageProcessor := kafkaConsumer.NewProductMessageProcessor(s.log, s.cfg, s.v, s.ps, s.metrics)
 
 	s.log.Info("Starting Writer Kafka consumers")
 	cg := kafkaClient.NewConsumerGroup(s.cfg.Kafka.Brokers, s.cfg.Kafka.GroupID, s.log)
