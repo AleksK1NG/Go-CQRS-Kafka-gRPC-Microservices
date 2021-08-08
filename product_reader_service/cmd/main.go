@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	log.Println("Starting product Reader microservice")
+	log.Println("Starting Reader microservice")
 
 	flag.Parse()
 

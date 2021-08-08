@@ -23,7 +23,7 @@ message CreateProductReq {
 }
 
 message CreateProductRes {
-  Product Product = 1;
+  string ProductID = 1;
 }
 
 message UpdateProductReq {
@@ -33,9 +33,7 @@ message UpdateProductReq {
   double Price = 4;
 }
 
-message UpdateProductRes {
-  Product Product = 1;
-}
+message UpdateProductRes {}
 
 message GetProductByIdReq {
   string ProductID = 1;

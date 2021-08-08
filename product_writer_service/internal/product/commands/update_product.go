@@ -15,7 +15,7 @@ import (
 )
 
 type UpdateProductCmdHandler interface {
-	Handle(ctx context.Context, command *UpdateProductCommand) (*models.Product, error)
+	Handle(ctx context.Context, command *UpdateProductCommand) error
 }
 
 type updateProductHandler struct {
@@ -29,7 +29,7 @@ func NewUpdateProductHandler(log logger.Logger, cfg *config.Config, pgRepo repos
 	return &updateProductHandler{log: log, cfg: cfg, pgRepo: pgRepo, kafkaProducer: kafkaProducer}
 }
 
-func (c *updateProductHandler) Handle(ctx context.Context, command *UpdateProductCommand) (*models.Product, error) {
+func (c *updateProductHandler) Handle(ctx context.Context, command *UpdateProductCommand) error {
 	productDto := &models.Product{
 		ProductID:   command.ProductID,
 		Name:        command.Name,
@@ -39,13 +39,13 @@ func (c *updateProductHandler) Handle(ctx context.Context, command *UpdateProduc
 
 	updatedProduct, err := c.pgRepo.UpdateProduct(ctx, productDto)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	msg := &kafkaMessages.ProductUpdated{Product: mappers.ProductToGrpcMessage(updatedProduct)}
 	msgBytes, err := proto.Marshal(msg)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	message := kafka.Message{
@@ -55,9 +55,5 @@ func (c *updateProductHandler) Handle(ctx context.Context, command *UpdateProduc
 	}
 
 	c.log.Infof("updated product: %+v", updatedProduct)
-	if err := c.kafkaProducer.PublishMessage(ctx, message); err != nil {
-		return nil, err
-	}
-
-	return updatedProduct, nil
+	return c.kafkaProducer.PublishMessage(ctx, message)
 }

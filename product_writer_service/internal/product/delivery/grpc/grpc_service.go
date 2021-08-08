@@ -40,13 +40,13 @@ func (s *grpcService) CreateProduct(ctx context.Context, req *writerService.Crea
 		return nil, s.errResponse(codes.InvalidArgument, err)
 	}
 
-	product, err := s.ps.Commands.CreateProduct.Handle(ctx, command)
+	err = s.ps.Commands.CreateProduct.Handle(ctx, command)
 	if err != nil {
 		s.log.WarnMsg("CreateProduct", err)
 		return nil, s.errResponse(codes.Internal, err)
 	}
 
-	return &writerService.CreateProductRes{Product: mappers.WriterProductToGrpc(product)}, nil
+	return &writerService.CreateProductRes{ProductID: productUUID.String()}, nil
 }
 
 func (s *grpcService) UpdateProduct(ctx context.Context, req *writerService.UpdateProductReq) (*writerService.UpdateProductRes, error) {
@@ -63,13 +63,13 @@ func (s *grpcService) UpdateProduct(ctx context.Context, req *writerService.Upda
 		return nil, s.errResponse(codes.InvalidArgument, err)
 	}
 
-	product, err := s.ps.Commands.UpdateProduct.Handle(ctx, command)
+	err = s.ps.Commands.UpdateProduct.Handle(ctx, command)
 	if err != nil {
 		s.log.WarnMsg("UpdateProduct", err)
 		return nil, s.errResponse(codes.Internal, err)
 	}
 
-	return &writerService.UpdateProductRes{Product: mappers.WriterProductToGrpc(product)}, nil
+	return &writerService.UpdateProductRes{}, nil
 }
 
 func (s *grpcService) GetProductById(ctx context.Context, req *writerService.GetProductByIdReq) (*writerService.GetProductByIdRes, error) {

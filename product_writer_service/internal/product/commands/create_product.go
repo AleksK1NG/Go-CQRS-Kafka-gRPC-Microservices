@@ -15,7 +15,7 @@ import (
 )
 
 type CreateProductCmdHandler interface {
-	Handle(ctx context.Context, command *CreateProductCommand) (*models.Product, error)
+	Handle(ctx context.Context, command *CreateProductCommand) error
 }
 
 type createProductHandler struct {
@@ -29,7 +29,7 @@ func NewCreateProductHandler(log logger.Logger, cfg *config.Config, pgRepo repos
 	return &createProductHandler{log: log, cfg: cfg, pgRepo: pgRepo, kafkaProducer: kafkaProducer}
 }
 
-func (c *createProductHandler) Handle(ctx context.Context, command *CreateProductCommand) (*models.Product, error) {
+func (c *createProductHandler) Handle(ctx context.Context, command *CreateProductCommand) error {
 	productDto := &models.Product{
 		ProductID:   command.ProductID,
 		Name:        command.Name,
@@ -39,13 +39,13 @@ func (c *createProductHandler) Handle(ctx context.Context, command *CreateProduc
 
 	createProduct, err := c.pgRepo.CreateProduct(ctx, productDto)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	msg := &kafkaMessages.ProductCreated{Product: mappers.ProductToGrpcMessage(createProduct)}
 	msgBytes, err := proto.Marshal(msg)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	message := kafka.Message{
@@ -55,9 +55,5 @@ func (c *createProductHandler) Handle(ctx context.Context, command *CreateProduc
 	}
 
 	c.log.Infof("created product: %+v", createProduct)
-	if err := c.kafkaProducer.PublishMessage(ctx, message); err != nil {
-		return nil, err
-	}
-
-	return createProduct, nil
+	return c.kafkaProducer.PublishMessage(ctx, message)
 }

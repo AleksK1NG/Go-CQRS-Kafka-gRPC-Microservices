@@ -37,13 +37,6 @@ func NewProductsHandlers(
 	return &productsHandlers{group: group, log: log, mw: mw, cfg: cfg, ps: ps, v: v}
 }
 
-func BindAndValidate(c echo.Context, v *validator.Validate, dto interface{}) error {
-	if err := c.Bind(&dto); err != nil {
-		return err
-	}
-	return v.StructCtx(c.Request().Context(), &dto)
-}
-
 func (h *productsHandlers) CreateProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
 
@@ -63,7 +56,7 @@ func (h *productsHandlers) CreateProduct() echo.HandlerFunc {
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
-		return c.JSON(http.StatusCreated, createDto.ProductID)
+		return c.JSON(http.StatusCreated, dto.CreateProductResponseDto{ProductID: createDto.ProductID})
 	}
 }
 

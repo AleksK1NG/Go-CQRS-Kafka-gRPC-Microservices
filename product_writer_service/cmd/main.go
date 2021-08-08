@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	log.Println("Starting product Writer microservice")
+	log.Println("Starting Writer microservice")
 
 	flag.Parse()
 
