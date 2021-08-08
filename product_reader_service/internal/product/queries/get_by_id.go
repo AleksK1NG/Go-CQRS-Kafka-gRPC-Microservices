@@ -6,6 +6,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/config"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/models"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/product/repository"
+	"github.com/opentracing/opentracing-go"
 )
 
 type GetProductByIdHandler interface {
@@ -24,6 +25,9 @@ func NewGetProductByIdHandler(log logger.Logger, cfg *config.Config, mongoRepo r
 }
 
 func (q *getProductByIdHandler) Handle(ctx context.Context, query *GetProductByIdQuery) (*models.Product, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "getProductByIdHandler.Handle")
+	defer span.Finish()
+
 	if product, err := q.redisRepo.GetProduct(ctx, query.ProductID.String()); err == nil && product != nil {
 		return product, nil
 	}

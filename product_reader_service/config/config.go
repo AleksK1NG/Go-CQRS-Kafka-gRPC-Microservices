@@ -10,6 +10,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/postgres"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/probes"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/redis"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"os"
@@ -18,7 +19,7 @@ import (
 var configPath string
 
 func init() {
-	flag.StringVar(&configPath, "config", "", "Reader microservice microservice config path")
+	flag.StringVar(&configPath, "config", "", "Reader microservice config path")
 }
 
 type Config struct {
@@ -33,6 +34,7 @@ type Config struct {
 	MongoCollections MongoCollections    `mapstructure:"mongoCollections"`
 	Probes           probes.Config       `mapstructure:"probes"`
 	ServiceSettings  ServiceSettings     `mapstructure:"serviceSettings"`
+	Jaeger           *tracing.Config     `mapstructure:"jaeger"`
 }
 
 type GRPC struct {

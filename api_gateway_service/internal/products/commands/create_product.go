@@ -5,7 +5,9 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/config"
 	kafkaClient "github.com/AleksK1NG/cqrs-microservices/pkg/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	kafkaMessages "github.com/AleksK1NG/cqrs-microservices/proto/kafka"
+	"github.com/opentracing/opentracing-go"
 	"github.com/segmentio/kafka-go"
 	"google.golang.org/protobuf/proto"
 	"time"
@@ -26,6 +28,8 @@ func NewCreateProductHandler(log logger.Logger, cfg *config.Config, kafkaProduce
 }
 
 func (c *createProductHandler) Handle(ctx context.Context, command *CreateProductCommand) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "createProductHandler.Handle")
+	defer span.Finish()
 
 	createDto := &kafkaMessages.ProductCreate{
 		ProductID:   command.CreateDto.ProductID.String(),
@@ -39,9 +43,17 @@ func (c *createProductHandler) Handle(ctx context.Context, command *CreateProduc
 		return err
 	}
 
+	textMapCarrier, err := tracing.InjectTextMapCarrier(span.Context())
+	if err != nil {
+		c.log.WarnMsg("InjectTextMapCarrier", err)
+	}
+
+	kafkaMessageHeaders := tracing.TextMapCarrierToKafkaMessageHeaders(textMapCarrier)
+
 	return c.kafkaProducer.PublishMessage(ctx, kafka.Message{
-		Topic: c.cfg.KafkaTopics.ProductCreate.TopicName,
-		Value: dtoBytes,
-		Time:  time.Now().UTC(),
+		Topic:   c.cfg.KafkaTopics.ProductCreate.TopicName,
+		Value:   dtoBytes,
+		Time:    time.Now().UTC(),
+		Headers: kafkaMessageHeaders,
 	})
 }

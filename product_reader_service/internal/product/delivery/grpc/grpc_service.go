@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/utils"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/config"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/models"
@@ -61,6 +62,8 @@ func (s *grpcService) UpdateProduct(ctx context.Context, req *readerService.Upda
 }
 
 func (s *grpcService) GetProductById(ctx context.Context, req *readerService.GetProductByIdReq) (*readerService.GetProductByIdRes, error) {
+	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.GetProductById")
+	defer span.Finish()
 
 	productUUID, err := uuid.FromString(req.GetProductID())
 	if err != nil {

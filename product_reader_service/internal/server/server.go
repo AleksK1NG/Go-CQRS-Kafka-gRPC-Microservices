@@ -7,12 +7,14 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/mongodb"
 	redisClient "github.com/AleksK1NG/cqrs-microservices/pkg/redis"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/config"
 	readerKafka "github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/product/delivery/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/product/repository"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/product/service"
 	"github.com/go-playground/validator"
 	"github.com/go-redis/redis/v8"
+	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	"github.com/segmentio/kafka-go"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -71,6 +73,15 @@ func (s *server) Run() error {
 
 	s.runHealthCheck(ctx)
 	s.runMetrics(cancel)
+
+	if s.cfg.Jaeger.Enable {
+		tracer, closer, err := tracing.NewJaegerTracer(s.cfg.Jaeger)
+		if err != nil {
+			return err
+		}
+		defer closer.Close() // nolint: errcheck
+		opentracing.SetGlobalTracer(tracer)
+	}
 
 	closeGrpcServer, grpcServer, err := s.newReaderGrpcServer()
 	if err != nil {
