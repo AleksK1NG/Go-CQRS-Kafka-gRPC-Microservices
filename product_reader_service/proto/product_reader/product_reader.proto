@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package readerService;
+
+option go_package = "./;readerService";
+
+import "product_reader_messages.proto";
+
+
+service readerService {
+  rpc CreateProduct(CreateProductReq) returns (CreateProductRes);
+  rpc UpdateProduct(UpdateProductReq) returns (UpdateProductRes);
+  rpc GetProductById(GetProductByIdReq) returns (GetProductByIdRes);
+  rpc SearchProduct(SearchReq) returns (SearchRes);
+}

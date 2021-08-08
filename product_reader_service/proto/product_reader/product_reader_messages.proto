@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package readerService;
+
+option go_package = "./;readerService";
+
+message Product {
+  string ProductID = 1;
+  string Name = 2;
+  string Description = 3;
+  double Price = 4;
+  google.protobuf.Timestamp CreatedAt = 6;
+  google.protobuf.Timestamp UpdatedAt = 7;
+}
+
+message CreateProductReq {
+  string ProductID = 1;
+  string Name = 2;
+  string Description = 3;
+  double Price = 4;
+}
+
+message CreateProductRes {
+  string ProductID = 1;
+}
+
+message UpdateProductReq {
+  string ProductID = 1;
+  string Name = 2;
+  string Description = 3;
+  double Price = 4;
+}
+
+message UpdateProductRes {
+  string ProductID = 1;
+}
+
+message GetProductByIdReq {
+  string ProductID = 1;
+}
+
+message GetProductByIdRes {
+  Product Product = 1;
+}
+
+
+message SearchReq {
+  string Search = 1;
+  int64 page = 2;
+  int64 size = 3;
+}
+
+message SearchRes {
+  int64 TotalCount = 1;
+  int64 TotalPages = 2;
+  int64 Page = 3;
+  int64 Size = 4;
+  bool HasMore = 5;
+  repeated Product Products = 6;
+}
