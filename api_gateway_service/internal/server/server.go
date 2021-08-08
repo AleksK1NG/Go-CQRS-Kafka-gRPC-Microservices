@@ -10,9 +10,11 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/interceptors"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	readerService "github.com/AleksK1NG/cqrs-microservices/product_reader_service/proto/product_reader"
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
+	"github.com/opentracing/opentracing-go"
 	"os"
 	"os/signal"
 	"syscall"
@@ -64,6 +66,15 @@ func (s *server) Run() error {
 
 	s.runMetrics(cancel)
 	s.runHealthCheck(ctx)
+
+	if s.cfg.Jaeger.Enable {
+		tracer, closer, err := tracing.NewJaegerTracer(s.cfg.Jaeger)
+		if err != nil {
+			return err
+		}
+		defer closer.Close() // nolint: errcheck
+		opentracing.SetGlobalTracer(tracer)
+	}
 
 	<-ctx.Done()
 	if err := s.echo.Server.Shutdown(ctx); err != nil {

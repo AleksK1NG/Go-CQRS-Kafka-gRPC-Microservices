@@ -56,3 +56,7 @@ mongoCollections:
   products: products
 serviceSettings:
   redisProductPrefixKey: "reader:product"
+jaeger:
+  enable: true
+  serviceName: reader_service
+  hostPort: "localhost:6831"

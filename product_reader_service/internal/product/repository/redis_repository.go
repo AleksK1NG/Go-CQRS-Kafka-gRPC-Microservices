@@ -7,6 +7,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/config"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/models"
 	"github.com/go-redis/redis/v8"
+	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 )
 
@@ -25,6 +26,9 @@ func NewRedisRepository(log logger.Logger, cfg *config.Config, redisClient redis
 }
 
 func (r *redisRepository) PutProduct(ctx context.Context, key string, product *models.Product) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "redisRepository.PutProduct")
+	defer span.Finish()
+
 	productBytes, err := json.Marshal(product)
 	if err != nil {
 		r.log.WarnMsg("json.Marshal", err)
@@ -38,6 +42,9 @@ func (r *redisRepository) PutProduct(ctx context.Context, key string, product *m
 }
 
 func (r *redisRepository) GetProduct(ctx context.Context, key string) (*models.Product, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "redisRepository.GetProduct")
+	defer span.Finish()
+
 	productBytes, err := r.redisClient.HGet(ctx, r.getRedisProductPrefixKey(), key).Bytes()
 	if err != nil {
 		if err != redis.Nil {

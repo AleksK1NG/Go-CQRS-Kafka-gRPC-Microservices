@@ -7,6 +7,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/probes"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/pkg/errors"
 	"os"
 
@@ -20,13 +21,14 @@ func init() {
 }
 
 type Config struct {
-	ServiceName string         `mapstructure:"serviceName"`
-	Logger      *logger.Config `mapstructure:"logger"`
-	KafkaTopics KafkaTopics    `mapstructure:"kafkaTopics"`
-	Http        Http           `mapstructure:"http"`
-	Grpc        Grpc           `mapstructure:"grpc"`
-	Kafka       *kafka.Config  `mapstructure:"kafka"`
-	Probes      probes.Config  `mapstructure:"probes"`
+	ServiceName string          `mapstructure:"serviceName"`
+	Logger      *logger.Config  `mapstructure:"logger"`
+	KafkaTopics KafkaTopics     `mapstructure:"kafkaTopics"`
+	Http        Http            `mapstructure:"http"`
+	Grpc        Grpc            `mapstructure:"grpc"`
+	Kafka       *kafka.Config   `mapstructure:"kafka"`
+	Probes      probes.Config   `mapstructure:"probes"`
+	Jaeger      *tracing.Config `mapstructure:"jaeger"`
 }
 
 type Http struct {

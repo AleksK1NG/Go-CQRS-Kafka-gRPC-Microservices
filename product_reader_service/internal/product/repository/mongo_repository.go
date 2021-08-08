@@ -6,6 +6,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/utils"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/config"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/models"
+	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 	"go.mongodb.org/mongo-driver/bson"
@@ -54,6 +55,9 @@ func (p *mongoRepository) UpdateProduct(ctx context.Context, product *models.Pro
 }
 
 func (p *mongoRepository) GetProductById(ctx context.Context, uuid uuid.UUID) (*models.Product, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.GetProductById")
+	defer span.Finish()
+
 	collection := p.db.Database(p.cfg.Mongo.Db).Collection(p.cfg.MongoCollections.Products)
 
 	var product models.Product

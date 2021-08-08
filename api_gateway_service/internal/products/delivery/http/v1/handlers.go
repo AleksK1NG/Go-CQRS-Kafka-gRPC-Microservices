@@ -9,6 +9,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/internal/products/service"
 	httpErrors "github.com/AleksK1NG/cqrs-microservices/pkg/http_errors"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/utils"
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
@@ -39,6 +40,8 @@ func NewProductsHandlers(
 
 func (h *productsHandlers) CreateProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.CreateProduct")
+		defer span.Finish()
 
 		createDto := &dto.CreateProductDto{ProductID: uuid.NewV4()}
 		if err := c.Bind(createDto); err != nil {
@@ -46,12 +49,12 @@ func (h *productsHandlers) CreateProduct() echo.HandlerFunc {
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
-		if err := h.v.StructCtx(c.Request().Context(), createDto); err != nil {
+		if err := h.v.StructCtx(ctx, createDto); err != nil {
 			h.log.WarnMsg("validate", err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
-		if err := h.ps.Commands.CreateProduct.Handle(c.Request().Context(), commands.NewCreateProductCommand(createDto)); err != nil {
+		if err := h.ps.Commands.CreateProduct.Handle(ctx, commands.NewCreateProductCommand(createDto)); err != nil {
 			h.log.WarnMsg("CreateProduct", err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
@@ -62,14 +65,16 @@ func (h *productsHandlers) CreateProduct() echo.HandlerFunc {
 
 func (h *productsHandlers) GetProductByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.GetProductByID")
+		defer span.Finish()
 
 		query := queries.NewGetProductByIdQuery(c.Param("id"))
-		if err := h.v.StructCtx(c.Request().Context(), query); err != nil {
+		if err := h.v.StructCtx(ctx, query); err != nil {
 			h.log.WarnMsg("validate", err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
-		response, err := h.ps.Queries.GetProductById.Handle(c.Request().Context(), query)
+		response, err := h.ps.Queries.GetProductById.Handle(ctx, query)
 		if err != nil {
 			h.log.WarnMsg("GetProductById", err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
