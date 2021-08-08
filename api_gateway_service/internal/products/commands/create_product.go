@@ -43,17 +43,11 @@ func (c *createProductHandler) Handle(ctx context.Context, command *CreateProduc
 		return err
 	}
 
-	textMapCarrier, err := tracing.InjectTextMapCarrier(span.Context())
-	if err != nil {
-		c.log.WarnMsg("InjectTextMapCarrier", err)
-	}
-
-	kafkaMessageHeaders := tracing.TextMapCarrierToKafkaMessageHeaders(textMapCarrier)
-
+	headersFromSpanCtx := tracing.GetKafkaTracingHeadersFromSpanCtx(span.Context())
 	return c.kafkaProducer.PublishMessage(ctx, kafka.Message{
 		Topic:   c.cfg.KafkaTopics.ProductCreate.TopicName,
 		Value:   dtoBytes,
 		Time:    time.Now().UTC(),
-		Headers: kafkaMessageHeaders,
+		Headers: headersFromSpanCtx,
 	})
 }

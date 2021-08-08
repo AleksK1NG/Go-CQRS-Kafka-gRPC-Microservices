@@ -105,6 +105,7 @@ func TextMapCarrierToKafkaMessageHeaders(textMap opentracing.TextMapCarrier) []k
 	}); err != nil {
 		return headers
 	}
+
 	return headers
 }
 
@@ -130,4 +131,14 @@ func InjectTextMapCarrierToGrpcMetaData(ctx context.Context, spanCtx opentracing
 		ctx = metadata.NewOutgoingContext(ctx, md)
 	}
 	return ctx
+}
+
+func GetKafkaTracingHeadersFromSpanCtx(spanCtx opentracing.SpanContext) []kafka.Header {
+	textMapCarrier, err := InjectTextMapCarrier(spanCtx)
+	if err != nil {
+		return []kafka.Header{}
+	}
+
+	kafkaMessageHeaders := TextMapCarrierToKafkaMessageHeaders(textMapCarrier)
+	return kafkaMessageHeaders
 }
