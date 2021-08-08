@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/config"
 	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/internal/client"
+	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/internal/metrics"
 	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/internal/middlewares"
 	v1 "github.com/AleksK1NG/cqrs-microservices/api_gateway_service/internal/products/delivery/http/v1"
 	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/internal/products/service"
@@ -28,6 +29,7 @@ type server struct {
 	im   interceptors.InterceptorManager
 	echo *echo.Echo
 	ps   *service.ProductService
+	m    *metrics.ApiGatewayMetrics
 }
 
 func NewServer(log logger.Logger, cfg *config.Config) *server {
@@ -40,6 +42,7 @@ func (s *server) Run() error {
 
 	s.mw = middlewares.NewMiddlewareManager(s.log, s.cfg)
 	s.im = interceptors.NewInterceptorManager(s.log)
+	s.m = metrics.NewApiGatewayMetrics(s.cfg)
 
 	readerServiceConn, err := client.NewReaderServiceConn(ctx, s.cfg, s.im)
 	if err != nil {
@@ -53,7 +56,7 @@ func (s *server) Run() error {
 
 	s.ps = service.NewProductService(s.log, s.cfg, kafkaProducer, rsClient)
 
-	productHandlers := v1.NewProductsHandlers(s.echo.Group(s.cfg.Http.ProductsPath), s.log, s.mw, s.cfg, s.ps, s.v)
+	productHandlers := v1.NewProductsHandlers(s.echo.Group(s.cfg.Http.ProductsPath), s.log, s.mw, s.cfg, s.ps, s.v, s.m)
 	productHandlers.MapRoutes()
 
 	go func() {
