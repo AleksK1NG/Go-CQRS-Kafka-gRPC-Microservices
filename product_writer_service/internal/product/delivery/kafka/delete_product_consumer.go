@@ -5,9 +5,9 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/commands"
 	kafkaMessages "github.com/AleksK1NG/cqrs-microservices/proto/kafka"
-	"github.com/golang/protobuf/proto"
 	uuid "github.com/satori/go.uuid"
 	"github.com/segmentio/kafka-go"
+	"google.golang.org/protobuf/proto"
 )
 
 func (s *productMessageProcessor) processDeleteProduct(ctx context.Context, r *kafka.Reader, m kafka.Message) {
