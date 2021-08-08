@@ -144,7 +144,20 @@ func (h *productsHandlers) UpdateProduct() echo.HandlerFunc {
 
 func (h *productsHandlers) DeleteProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.DeleteProduct")
+		defer span.Finish()
 
-		return c.JSON(http.StatusOK, "OK")
+		productUUID, err := uuid.FromString(c.Param("id"))
+		if err != nil {
+			h.log.WarnMsg("uuid.FromString", err)
+			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
+		}
+
+		if err := h.ps.Commands.DeleteProduct.Handle(ctx, commands.NewDeleteProductCommand(productUUID)); err != nil {
+			h.log.WarnMsg("uuid.FromString", err)
+			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
+		}
+
+		return c.NoContent(http.StatusOK)
 	}
 }
