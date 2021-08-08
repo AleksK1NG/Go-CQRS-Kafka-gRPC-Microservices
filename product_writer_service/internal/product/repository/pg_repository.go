@@ -42,6 +42,8 @@ func (p *productRepository) CreateProduct(ctx context.Context, product *models.P
 }
 
 func (p *productRepository) UpdateProduct(ctx context.Context, product *models.Product) (*models.Product, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "productRepository.UpdateProduct")
+	defer span.Finish()
 
 	var prod models.Product
 	if err := p.db.QueryRow(
@@ -60,6 +62,8 @@ func (p *productRepository) UpdateProduct(ctx context.Context, product *models.P
 }
 
 func (p *productRepository) GetProductById(ctx context.Context, uuid uuid.UUID) (*models.Product, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "productRepository.GetProductById")
+	defer span.Finish()
 
 	var product models.Product
 	if err := p.db.QueryRow(ctx, getProductByIdQuery, uuid).Scan(

@@ -86,6 +86,8 @@ func (h *productsHandlers) GetProductByID() echo.HandlerFunc {
 
 func (h *productsHandlers) SearchProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.SearchProduct")
+		defer span.Finish()
 
 		page, err := strconv.Atoi(c.QueryParam("page"))
 		if err != nil {
@@ -99,7 +101,7 @@ func (h *productsHandlers) SearchProduct() echo.HandlerFunc {
 		}
 
 		query := queries.NewSearchProductQuery(c.QueryParam("search"), utils.NewPaginationQuery(size, page))
-		response, err := h.ps.Queries.SearchProduct.Handle(c.Request().Context(), query)
+		response, err := h.ps.Queries.SearchProduct.Handle(ctx, query)
 		if err != nil {
 			h.log.WarnMsg("SearchProduct", err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
@@ -111,6 +113,8 @@ func (h *productsHandlers) SearchProduct() echo.HandlerFunc {
 
 func (h *productsHandlers) UpdateProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.UpdateProduct")
+		defer span.Finish()
 
 		productUUID, err := uuid.FromString(c.Param("id"))
 		if err != nil {
@@ -124,12 +128,12 @@ func (h *productsHandlers) UpdateProduct() echo.HandlerFunc {
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
-		if err := h.v.StructCtx(c.Request().Context(), updateDto); err != nil {
+		if err := h.v.StructCtx(ctx, updateDto); err != nil {
 			h.log.WarnMsg("validate", err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
-		if err := h.ps.Commands.UpdateProduct.Handle(c.Request().Context(), commands.NewUpdateProductCommand(updateDto)); err != nil {
+		if err := h.ps.Commands.UpdateProduct.Handle(ctx, commands.NewUpdateProductCommand(updateDto)); err != nil {
 			h.log.WarnMsg("UpdateProduct", err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
@@ -140,6 +144,7 @@ func (h *productsHandlers) UpdateProduct() echo.HandlerFunc {
 
 func (h *productsHandlers) DeleteProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
+
 		return c.JSON(http.StatusOK, "OK")
 	}
 }

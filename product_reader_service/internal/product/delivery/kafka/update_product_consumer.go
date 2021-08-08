@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"context"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/product/commands"
 	kafkaMessages "github.com/AleksK1NG/cqrs-microservices/proto/kafka"
 	"github.com/segmentio/kafka-go"
@@ -9,6 +10,9 @@ import (
 )
 
 func (s *readerMessageProcessor) processProductUpdated(ctx context.Context, r *kafka.Reader, m kafka.Message) {
+	ctx, span := tracing.StartKafkaConsumerTracerSpan(ctx, m.Headers, "readerMessageProcessor.processProductUpdated")
+	defer span.Finish()
+
 	msg := &kafkaMessages.ProductUpdated{}
 	if err := proto.Unmarshal(m.Value, msg); err != nil {
 		s.log.WarnMsg("proto.Unmarshal", err)

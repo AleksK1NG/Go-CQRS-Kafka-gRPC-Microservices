@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/config"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/commands"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/queries"
@@ -27,6 +28,8 @@ func NewWriterGrpcService(log logger.Logger, cfg *config.Config, v *validator.Va
 }
 
 func (s *grpcService) CreateProduct(ctx context.Context, req *writerService.CreateProductReq) (*writerService.CreateProductRes, error) {
+	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.CreateProduct")
+	defer span.Finish()
 
 	productUUID, err := uuid.FromString(req.GetProductID())
 	if err != nil {
@@ -50,6 +53,8 @@ func (s *grpcService) CreateProduct(ctx context.Context, req *writerService.Crea
 }
 
 func (s *grpcService) UpdateProduct(ctx context.Context, req *writerService.UpdateProductReq) (*writerService.UpdateProductRes, error) {
+	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.UpdateProduct")
+	defer span.Finish()
 
 	productUUID, err := uuid.FromString(req.GetProductID())
 	if err != nil {
@@ -73,6 +78,8 @@ func (s *grpcService) UpdateProduct(ctx context.Context, req *writerService.Upda
 }
 
 func (s *grpcService) GetProductById(ctx context.Context, req *writerService.GetProductByIdReq) (*writerService.GetProductByIdRes, error) {
+	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.GetProductById")
+	defer span.Finish()
 
 	productUUID, err := uuid.FromString(req.GetProductID())
 	if err != nil {

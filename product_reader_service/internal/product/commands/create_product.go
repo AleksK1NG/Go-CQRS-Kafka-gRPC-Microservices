@@ -6,6 +6,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/config"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/models"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/product/repository"
+	"github.com/opentracing/opentracing-go"
 )
 
 type CreateProductCmdHandler interface {
@@ -24,6 +25,9 @@ func NewCreateProductHandler(log logger.Logger, cfg *config.Config, mongoRepo re
 }
 
 func (c *createProductHandler) Handle(ctx context.Context, command *CreateProductCommand) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "createProductHandler.Handle")
+	defer span.Finish()
+
 	product := &models.Product{
 		ProductID:   command.ProductID,
 		Name:        command.Name,
