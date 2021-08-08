@@ -45,7 +45,6 @@ message GetProductByIdRes {
   Product Product = 1;
 }
 
-
 message SearchReq {
   string Search = 1;
   int64 page = 2;
@@ -60,3 +59,9 @@ message SearchRes {
   bool HasMore = 5;
   repeated Product Products = 6;
 }
+
+message DeleteProductByIdReq {
+  string ProductID = 1;
+}
+
+message DeleteProductByIdRes {}

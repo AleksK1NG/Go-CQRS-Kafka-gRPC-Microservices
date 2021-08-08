@@ -106,6 +106,24 @@ func (s *grpcService) SearchProduct(ctx context.Context, req *readerService.Sear
 	return models.ProductListToGrpc(productsList), nil
 }
 
+func (s *grpcService) DeleteProductByID(ctx context.Context, req *readerService.DeleteProductByIdReq) (*readerService.DeleteProductByIdRes, error) {
+	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.DeleteProductByID")
+	defer span.Finish()
+
+	productUUID, err := uuid.FromString(req.GetProductID())
+	if err != nil {
+		s.log.WarnMsg("uuid.FromString", err)
+		return nil, s.errResponse(codes.InvalidArgument, err)
+	}
+
+	if err := s.ps.Commands.DeleteProduct.Handle(ctx, commands.NewDeleteProductCommand(productUUID)); err != nil {
+		s.log.WarnMsg("DeleteProduct", err)
+		return nil, s.errResponse(codes.Internal, err)
+	}
+
+	return &readerService.DeleteProductByIdRes{}, nil
+}
+
 func (s *grpcService) errResponse(c codes.Code, err error) error {
 	return status.Error(c, err.Error())
 }

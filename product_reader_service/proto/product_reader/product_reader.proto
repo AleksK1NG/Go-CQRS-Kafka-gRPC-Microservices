@@ -12,4 +12,5 @@ service readerService {
   rpc UpdateProduct(UpdateProductReq) returns (UpdateProductRes);
   rpc GetProductById(GetProductByIdReq) returns (GetProductByIdRes);
   rpc SearchProduct(SearchReq) returns (SearchRes);
+  rpc DeleteProductByID(DeleteProductByIdReq) returns (DeleteProductByIdRes);
 }
