@@ -29,7 +29,7 @@ func StartHttpServerTracerSpan(c echo.Context, operationName string) (context.Co
 func GetTextMapCarrierFromMetaData(ctx context.Context) opentracing.TextMapCarrier {
 	metadataMap := make(opentracing.TextMapCarrier)
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
-		for key, _ := range md.Copy() {
+		for key := range md.Copy() {
 			metadataMap.Set(key, md.Get(key)[0])
 		}
 	}
