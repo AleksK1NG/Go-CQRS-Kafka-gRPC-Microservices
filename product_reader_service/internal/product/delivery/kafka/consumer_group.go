@@ -48,6 +48,8 @@ func (s *readerMessageProcessor) ProcessMessages(ctx context.Context, r *kafka.R
 			s.processProductCreated(ctx, r, m)
 		case s.cfg.KafkaTopics.ProductUpdated.TopicName:
 			s.processProductUpdated(ctx, r, m)
+		case s.cfg.KafkaTopics.ProductDeleted.TopicName:
+			s.processProductDeleted(ctx, r, m)
 		}
 	}
 }

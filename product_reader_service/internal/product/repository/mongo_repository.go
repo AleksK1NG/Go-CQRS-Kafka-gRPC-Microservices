@@ -81,7 +81,7 @@ func (p *mongoRepository) DeleteProduct(ctx context.Context, uuid uuid.UUID) err
 
 	collection := p.db.Database(p.cfg.Mongo.Db).Collection(p.cfg.MongoCollections.Products)
 
-	return collection.FindOneAndDelete(ctx, bson.M{"_id": uuid}).Err()
+	return collection.FindOneAndDelete(ctx, bson.M{"_id": uuid.String()}).Err()
 }
 
 func (p *mongoRepository) Search(ctx context.Context, search string, pagination *utils.Pagination) (*models.ProductsList, error) {
