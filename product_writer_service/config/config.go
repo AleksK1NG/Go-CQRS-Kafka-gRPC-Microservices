@@ -41,6 +41,7 @@ type KafkaTopics struct {
 	ProductCreated kafkaClient.TopicConfig `mapstructure:"productCreated"`
 	ProductUpdate  kafkaClient.TopicConfig `mapstructure:"productUpdate"`
 	ProductUpdated kafkaClient.TopicConfig `mapstructure:"productUpdated"`
+	ProductDelete  kafkaClient.TopicConfig `mapstructure:"productDelete"`
 }
 
 func InitConfig() (*Config, error) {
