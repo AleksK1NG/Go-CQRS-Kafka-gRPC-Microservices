@@ -5,6 +5,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/config"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/product/repository"
+	"github.com/opentracing/opentracing-go"
 )
 
 type DeleteProductCmdHandler interface {
@@ -23,6 +24,9 @@ func NewDeleteProductCmdHandler(log logger.Logger, cfg *config.Config, mongoRepo
 }
 
 func (c *deleteProductCmdHandler) Handle(ctx context.Context, command *DeleteProductCommand) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "deleteProductCmdHandler.Handle")
+	defer span.Finish()
+
 	if err := c.mongoRepo.DeleteProduct(ctx, command.ProductID); err != nil {
 		return err
 	}

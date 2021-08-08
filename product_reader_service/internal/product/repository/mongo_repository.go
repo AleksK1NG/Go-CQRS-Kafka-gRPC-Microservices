@@ -26,6 +26,9 @@ func NewMongoRepository(log logger.Logger, cfg *config.Config, db *mongo.Client)
 }
 
 func (p *mongoRepository) CreateProduct(ctx context.Context, product *models.Product) (*models.Product, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.CreateProduct")
+	defer span.Finish()
+
 	collection := p.db.Database(p.cfg.Mongo.Db).Collection(p.cfg.MongoCollections.Products)
 
 	insertedID, err := collection.InsertOne(ctx, product, &options.InsertOneOptions{})
@@ -39,6 +42,9 @@ func (p *mongoRepository) CreateProduct(ctx context.Context, product *models.Pro
 }
 
 func (p *mongoRepository) UpdateProduct(ctx context.Context, product *models.Product) (*models.Product, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.UpdateProduct")
+	defer span.Finish()
+
 	collection := p.db.Database(p.cfg.Mongo.Db).Collection(p.cfg.MongoCollections.Products)
 
 	ops := options.FindOneAndUpdate()
@@ -70,12 +76,18 @@ func (p *mongoRepository) GetProductById(ctx context.Context, uuid uuid.UUID) (*
 }
 
 func (p *mongoRepository) DeleteProduct(ctx context.Context, uuid uuid.UUID) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.DeleteProduct")
+	defer span.Finish()
+
 	collection := p.db.Database(p.cfg.Mongo.Db).Collection(p.cfg.MongoCollections.Products)
 
 	return collection.FindOneAndDelete(ctx, bson.M{"_id": uuid}).Err()
 }
 
 func (p *mongoRepository) Search(ctx context.Context, search string, pagination *utils.Pagination) (*models.ProductsList, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.Search")
+	defer span.Finish()
+
 	collection := p.db.Database(p.cfg.Mongo.Db).Collection(p.cfg.MongoCollections.Products)
 
 	filter := bson.D{

@@ -5,7 +5,9 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/config"
 	kafkaClient "github.com/AleksK1NG/cqrs-microservices/pkg/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	kafkaMessages "github.com/AleksK1NG/cqrs-microservices/proto/kafka"
+	"github.com/opentracing/opentracing-go"
 	"github.com/segmentio/kafka-go"
 	"google.golang.org/protobuf/proto"
 	"time"
@@ -26,6 +28,8 @@ func NewUpdateProductHandler(log logger.Logger, cfg *config.Config, kafkaProduce
 }
 
 func (c *updateProductCmdHandler) Handle(ctx context.Context, command *UpdateProductCommand) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "updateProductCmdHandler.Handle")
+	defer span.Finish()
 
 	updateDto := &kafkaMessages.ProductUpdate{
 		ProductID:   command.UpdateDto.ProductID.String(),
@@ -40,8 +44,9 @@ func (c *updateProductCmdHandler) Handle(ctx context.Context, command *UpdatePro
 	}
 
 	return c.kafkaProducer.PublishMessage(ctx, kafka.Message{
-		Topic: c.cfg.KafkaTopics.ProductUpdate.TopicName,
-		Value: dtoBytes,
-		Time:  time.Now().UTC(),
+		Topic:   c.cfg.KafkaTopics.ProductUpdate.TopicName,
+		Value:   dtoBytes,
+		Time:    time.Now().UTC(),
+		Headers: tracing.GetKafkaTracingHeadersFromSpanCtx(span.Context()),
 	})
 }

@@ -54,11 +54,11 @@ func (c *createProductHandler) Handle(ctx context.Context, command *CreateProduc
 	}
 
 	headersFromSpanCtx := tracing.GetKafkaTracingHeadersFromSpanCtx(span.Context())
-	c.log.Infof("kafka tracing headers: %+v", headersFromSpanCtx)
 	message := kafka.Message{
-		Topic: c.cfg.KafkaTopics.ProductCreated.TopicName,
-		Value: msgBytes,
-		Time:  time.Now().UTC(),
+		Topic:   c.cfg.KafkaTopics.ProductCreated.TopicName,
+		Value:   msgBytes,
+		Time:    time.Now().UTC(),
+		Headers: headersFromSpanCtx,
 	}
 
 	c.log.Infof("created product: %+v", createProduct)

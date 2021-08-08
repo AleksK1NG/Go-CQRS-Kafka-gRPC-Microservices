@@ -30,6 +30,8 @@ func NewReaderGrpcService(log logger.Logger, cfg *config.Config, v *validator.Va
 }
 
 func (s *grpcService) CreateProduct(ctx context.Context, req *readerService.CreateProductReq) (*readerService.CreateProductRes, error) {
+	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.CreateProduct")
+	defer span.Finish()
 
 	command := commands.NewCreateProductCommand(req.GetProductID(), req.GetName(), req.GetDescription(), req.GetPrice(), time.Now(), time.Now())
 	if err := s.v.StructCtx(ctx, command); err != nil {
@@ -46,6 +48,8 @@ func (s *grpcService) CreateProduct(ctx context.Context, req *readerService.Crea
 }
 
 func (s *grpcService) UpdateProduct(ctx context.Context, req *readerService.UpdateProductReq) (*readerService.UpdateProductRes, error) {
+	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.UpdateProduct")
+	defer span.Finish()
 
 	command := commands.NewUpdateProductCommand(req.GetProductID(), req.GetName(), req.GetDescription(), req.GetPrice(), time.Now())
 	if err := s.v.StructCtx(ctx, command); err != nil {
@@ -87,6 +91,9 @@ func (s *grpcService) GetProductById(ctx context.Context, req *readerService.Get
 }
 
 func (s *grpcService) SearchProduct(ctx context.Context, req *readerService.SearchReq) (*readerService.SearchRes, error) {
+	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.SearchProduct")
+	defer span.Finish()
+
 	pq := utils.NewPaginationQuery(int(req.GetSize()), int(req.GetPage()))
 
 	query := queries.NewSearchProductQuery(req.GetSearch(), pq)
