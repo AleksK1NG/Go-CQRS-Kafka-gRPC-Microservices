@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/config"
+	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/metrics"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/product/service"
 	"github.com/go-playground/validator"
 	"github.com/segmentio/kafka-go"
@@ -15,14 +16,15 @@ const (
 )
 
 type readerMessageProcessor struct {
-	log logger.Logger
-	cfg *config.Config
-	v   *validator.Validate
-	ps  *service.ProductService
+	log     logger.Logger
+	cfg     *config.Config
+	v       *validator.Validate
+	ps      *service.ProductService
+	metrics *metrics.ReaderServiceMetrics
 }
 
-func NewReaderMessageProcessor(log logger.Logger, cfg *config.Config, v *validator.Validate, ps *service.ProductService) *readerMessageProcessor {
-	return &readerMessageProcessor{log: log, cfg: cfg, v: v, ps: ps}
+func NewReaderMessageProcessor(log logger.Logger, cfg *config.Config, v *validator.Validate, ps *service.ProductService, metrics *metrics.ReaderServiceMetrics) *readerMessageProcessor {
+	return &readerMessageProcessor{log: log, cfg: cfg, v: v, ps: ps, metrics: metrics}
 }
 
 func (s *readerMessageProcessor) ProcessMessages(ctx context.Context, r *kafka.Reader, wg *sync.WaitGroup, workerID int) {

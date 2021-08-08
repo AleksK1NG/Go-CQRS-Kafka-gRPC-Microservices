@@ -10,13 +10,15 @@ import (
 )
 
 func (s *readerMessageProcessor) processProductUpdated(ctx context.Context, r *kafka.Reader, m kafka.Message) {
+	s.metrics.UpdateProductKafkaMessages.Inc()
+
 	ctx, span := tracing.StartKafkaConsumerTracerSpan(ctx, m.Headers, "readerMessageProcessor.processProductUpdated")
 	defer span.Finish()
 
 	msg := &kafkaMessages.ProductUpdated{}
 	if err := proto.Unmarshal(m.Value, msg); err != nil {
 		s.log.WarnMsg("proto.Unmarshal", err)
-		s.commitMessage(ctx, r, m)
+		s.commitErrMessage(ctx, r, m)
 		return
 	}
 
@@ -24,15 +26,17 @@ func (s *readerMessageProcessor) processProductUpdated(ctx context.Context, r *k
 	command := commands.NewUpdateProductCommand(p.GetProductID(), p.GetName(), p.GetDescription(), p.GetPrice(), p.GetUpdatedAt().AsTime())
 	if err := s.v.StructCtx(ctx, command); err != nil {
 		s.log.WarnMsg("validate", err)
-		s.commitMessage(ctx, r, m)
+		s.commitErrMessage(ctx, r, m)
 		return
 	}
 
 	if err := s.ps.Commands.UpdateProduct.Handle(ctx, command); err != nil {
 		s.log.WarnMsg("UpdateProduct", err)
+		s.metrics.ErrorKafkaMessages.Inc()
 		return
 	}
 
 	s.log.Infof("processed update product kafka message: %s", p.String())
 	s.commitMessage(ctx, r, m)
+	s.metrics.SuccessKafkaMessages.Inc()
 }

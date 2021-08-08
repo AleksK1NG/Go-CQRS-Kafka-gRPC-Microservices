@@ -6,6 +6,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/utils"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/config"
+	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/metrics"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/models"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/product/commands"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/product/queries"
@@ -19,17 +20,20 @@ import (
 )
 
 type grpcService struct {
-	log logger.Logger
-	cfg *config.Config
-	v   *validator.Validate
-	ps  *service.ProductService
+	log     logger.Logger
+	cfg     *config.Config
+	v       *validator.Validate
+	ps      *service.ProductService
+	metrics *metrics.ReaderServiceMetrics
 }
 
-func NewReaderGrpcService(log logger.Logger, cfg *config.Config, v *validator.Validate, ps *service.ProductService) *grpcService {
-	return &grpcService{log: log, cfg: cfg, v: v, ps: ps}
+func NewReaderGrpcService(log logger.Logger, cfg *config.Config, v *validator.Validate, ps *service.ProductService, metrics *metrics.ReaderServiceMetrics) *grpcService {
+	return &grpcService{log: log, cfg: cfg, v: v, ps: ps, metrics: metrics}
 }
 
 func (s *grpcService) CreateProduct(ctx context.Context, req *readerService.CreateProductReq) (*readerService.CreateProductRes, error) {
+	s.metrics.CreateProductGrpcRequests.Inc()
+
 	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.CreateProduct")
 	defer span.Finish()
 
@@ -44,10 +48,13 @@ func (s *grpcService) CreateProduct(ctx context.Context, req *readerService.Crea
 		return nil, s.errResponse(codes.InvalidArgument, err)
 	}
 
+	s.metrics.SuccessGrpcRequests.Inc()
 	return &readerService.CreateProductRes{ProductID: req.GetProductID()}, nil
 }
 
 func (s *grpcService) UpdateProduct(ctx context.Context, req *readerService.UpdateProductReq) (*readerService.UpdateProductRes, error) {
+	s.metrics.UpdateProductGrpcRequests.Inc()
+
 	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.UpdateProduct")
 	defer span.Finish()
 
@@ -62,10 +69,13 @@ func (s *grpcService) UpdateProduct(ctx context.Context, req *readerService.Upda
 		return nil, s.errResponse(codes.InvalidArgument, err)
 	}
 
+	s.metrics.SuccessGrpcRequests.Inc()
 	return &readerService.UpdateProductRes{ProductID: req.GetProductID()}, nil
 }
 
 func (s *grpcService) GetProductById(ctx context.Context, req *readerService.GetProductByIdReq) (*readerService.GetProductByIdRes, error) {
+	s.metrics.GetProductByIdGrpcRequests.Inc()
+
 	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.GetProductById")
 	defer span.Finish()
 
@@ -87,10 +97,13 @@ func (s *grpcService) GetProductById(ctx context.Context, req *readerService.Get
 		return nil, s.errResponse(codes.Internal, err)
 	}
 
+	s.metrics.SuccessGrpcRequests.Inc()
 	return &readerService.GetProductByIdRes{Product: models.ProductToGrpcMessage(product)}, nil
 }
 
 func (s *grpcService) SearchProduct(ctx context.Context, req *readerService.SearchReq) (*readerService.SearchRes, error) {
+	s.metrics.SearchProductGrpcRequests.Inc()
+
 	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.SearchProduct")
 	defer span.Finish()
 
@@ -103,10 +116,13 @@ func (s *grpcService) SearchProduct(ctx context.Context, req *readerService.Sear
 		return nil, s.errResponse(codes.Internal, err)
 	}
 
+	s.metrics.SuccessGrpcRequests.Inc()
 	return models.ProductListToGrpc(productsList), nil
 }
 
 func (s *grpcService) DeleteProductByID(ctx context.Context, req *readerService.DeleteProductByIdReq) (*readerService.DeleteProductByIdRes, error) {
+	s.metrics.DeleteProductGrpcRequests.Inc()
+
 	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.DeleteProductByID")
 	defer span.Finish()
 
@@ -121,9 +137,11 @@ func (s *grpcService) DeleteProductByID(ctx context.Context, req *readerService.
 		return nil, s.errResponse(codes.Internal, err)
 	}
 
+	s.metrics.SuccessGrpcRequests.Inc()
 	return &readerService.DeleteProductByIdRes{}, nil
 }
 
 func (s *grpcService) errResponse(c codes.Code, err error) error {
+	s.metrics.ErrorGrpcRequests.Inc()
 	return status.Error(c, err.Error())
 }

@@ -9,6 +9,7 @@ import (
 	redisClient "github.com/AleksK1NG/cqrs-microservices/pkg/redis"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/config"
+	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/metrics"
 	readerKafka "github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/product/delivery/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/product/repository"
 	"github.com/AleksK1NG/cqrs-microservices/product_reader_service/internal/product/service"
@@ -32,6 +33,7 @@ type server struct {
 	mongoClient *mongo.Client
 	redisClient redis.UniversalClient
 	ps          *service.ProductService
+	metrics     *metrics.ReaderServiceMetrics
 }
 
 func NewServer(log logger.Logger, cfg *config.Config) *server {
@@ -43,6 +45,7 @@ func (s *server) Run() error {
 	defer cancel()
 
 	s.im = interceptors.NewInterceptorManager(s.log)
+	s.metrics = metrics.NewReaderServiceMetrics(s.cfg)
 
 	mongoDBConn, err := mongodb.NewMongoDBConn(ctx, s.cfg.Mongo)
 	if err != nil {
@@ -61,7 +64,7 @@ func (s *server) Run() error {
 
 	s.ps = service.NewProductService(s.log, s.cfg, mongoRepo, redisRepo)
 
-	readerMessageProcessor := readerKafka.NewReaderMessageProcessor(s.log, s.cfg, s.v, s.ps)
+	readerMessageProcessor := readerKafka.NewReaderMessageProcessor(s.log, s.cfg, s.v, s.ps, s.metrics)
 	s.log.Info("Starting Reader Kafka consumers")
 	cg := kafkaClient.NewConsumerGroup(s.cfg.Kafka.Brokers, s.cfg.Kafka.GroupID, s.log)
 	go cg.ConsumeTopic(ctx, s.getConsumerGroupTopics(), readerKafka.PoolSize, readerMessageProcessor.ProcessMessages)

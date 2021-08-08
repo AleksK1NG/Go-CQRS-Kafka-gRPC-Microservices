@@ -24,3 +24,10 @@ func (s *readerMessageProcessor) protoUnmarshal(msg proto.Message, m kafka.Messa
 	}
 	return nil
 }
+
+func (s *readerMessageProcessor) commitErrMessage(ctx context.Context, r *kafka.Reader, m kafka.Message) {
+	s.metrics.ErrorKafkaMessages.Inc()
+	if err := r.CommitMessages(ctx, m); err != nil {
+		s.log.WarnMsg("commitMessage", err)
+	}
+}
