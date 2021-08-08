@@ -35,32 +35,26 @@ func (c *updateProductHandler) Handle(ctx context.Context, command *UpdateProduc
 	span, ctx := opentracing.StartSpanFromContext(ctx, "updateProductHandler.Handle")
 	defer span.Finish()
 
-	productDto := &models.Product{
-		ProductID:   command.ProductID,
-		Name:        command.Name,
-		Description: command.Description,
-		Price:       command.Price,
-	}
+	productDto := &models.Product{ProductID: command.ProductID, Name: command.Name, Description: command.Description, Price: command.Price}
 
-	updatedProduct, err := c.pgRepo.UpdateProduct(ctx, productDto)
+	product, err := c.pgRepo.UpdateProduct(ctx, productDto)
 	if err != nil {
 		return err
 	}
 
-	msg := &kafkaMessages.ProductUpdated{Product: mappers.ProductToGrpcMessage(updatedProduct)}
+	msg := &kafkaMessages.ProductUpdated{Product: mappers.ProductToGrpcMessage(product)}
 	msgBytes, err := proto.Marshal(msg)
 	if err != nil {
 		return err
 	}
 
-	headersFromSpanCtx := tracing.GetKafkaTracingHeadersFromSpanCtx(span.Context())
 	message := kafka.Message{
 		Topic:   c.cfg.KafkaTopics.ProductUpdated.TopicName,
 		Value:   msgBytes,
 		Time:    time.Now().UTC(),
-		Headers: headersFromSpanCtx,
+		Headers: tracing.GetKafkaTracingHeadersFromSpanCtx(span.Context()),
 	}
 
-	c.log.Infof("updated product: %+v", updatedProduct)
+	c.log.Debugf("updated product: %+v", product)
 	return c.kafkaProducer.PublishMessage(ctx, message)
 }

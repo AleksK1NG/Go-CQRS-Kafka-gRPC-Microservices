@@ -22,6 +22,20 @@ func NewPaginationQuery(size int, page int) *Pagination {
 	return &Pagination{Size: size, Page: page}
 }
 
+func NewPaginationFromQueryParams(size string, page string) *Pagination {
+	p := &Pagination{Size: defaultSize, Page: 1}
+
+	if sizeNum, err := strconv.Atoi(size); err == nil {
+		p.Page = sizeNum
+	}
+
+	if pageNum, err := strconv.Atoi(page); err == nil {
+		p.Page = pageNum
+	}
+
+	return p
+}
+
 // SetSize Set page size
 func (q *Pagination) SetSize(sizeQuery string) error {
 	if sizeQuery == "" {

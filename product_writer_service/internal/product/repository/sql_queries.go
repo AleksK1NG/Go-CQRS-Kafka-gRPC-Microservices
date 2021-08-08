@@ -14,4 +14,6 @@ const (
 
 	getProductByIdQuery = `SELECT p.product_id, p.name, p.description, p.price, p.created_at, p.updated_at 
 	FROM products p WHERE p.product_id = $1`
+
+	deleteProductByIdQuery = `DELETE FROM products WHERE product_id = $1`
 )
