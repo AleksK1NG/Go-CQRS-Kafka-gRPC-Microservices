@@ -16,7 +16,6 @@ import (
 	"github.com/labstack/echo/v4"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
-	"strconv"
 )
 
 type productsHandlers struct {
@@ -106,20 +105,9 @@ func (h *productsHandlers) SearchProduct() echo.HandlerFunc {
 		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.SearchProduct")
 		defer span.Finish()
 
-		page, err := strconv.Atoi(c.QueryParam("page"))
-		if err != nil {
-			h.log.WarnMsg("validate", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
-			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
-		}
-		size, err := strconv.Atoi(c.QueryParam("size"))
-		if err != nil {
-			h.log.WarnMsg("validate", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
-			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
-		}
+		pq := utils.NewPaginationFromQueryParams(c.QueryParam("size"), c.QueryParam("page"))
 
-		query := queries.NewSearchProductQuery(c.QueryParam("search"), utils.NewPaginationQuery(size, page))
+		query := queries.NewSearchProductQuery(c.QueryParam("search"), pq)
 		response, err := h.ps.Queries.SearchProduct.Handle(ctx, query)
 		if err != nil {
 			h.log.WarnMsg("SearchProduct", err)
@@ -185,7 +173,7 @@ func (h *productsHandlers) DeleteProduct() echo.HandlerFunc {
 		}
 
 		if err := h.ps.Commands.DeleteProduct.Handle(ctx, commands.NewDeleteProductCommand(productUUID)); err != nil {
-			h.log.WarnMsg("uuid.FromString", err)
+			h.log.WarnMsg("DeleteProduct", err)
 			h.agMetrics.ErrorHttpRequests.Inc()
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}

@@ -37,7 +37,6 @@ func (p *productRepository) CreateProduct(ctx context.Context, product *models.P
 		return nil, errors.Wrap(err, "db.QueryRow")
 	}
 
-	p.log.Debugf("created product: %+v", created)
 	return &created, nil
 }
 
@@ -57,7 +56,6 @@ func (p *productRepository) UpdateProduct(ctx context.Context, product *models.P
 		return nil, errors.Wrap(err, "Scan")
 	}
 
-	p.log.Debugf("updated product: %+v", prod)
 	return &prod, nil
 }
 
@@ -77,7 +75,6 @@ func (p *productRepository) GetProductById(ctx context.Context, uuid uuid.UUID) 
 		return nil, errors.Wrap(err, "Scan")
 	}
 
-	p.log.Debugf("get product by id: %+v", product)
 	return &product, nil
 }
 
@@ -85,12 +82,11 @@ func (p *productRepository) DeleteProductByID(ctx context.Context, uuid uuid.UUI
 	span, ctx := opentracing.StartSpanFromContext(ctx, "productRepository.DeleteProductByID")
 	defer span.Finish()
 
-	deleteProductByIdQuery := `DELETE FROM products WHERE product_id = $1`
 	result, err := p.db.Exec(ctx, deleteProductByIdQuery, uuid)
 	if err != nil {
 		return errors.Wrap(err, "Exec")
 	}
 
-	p.log.Infof("deleted rows: %v", result.RowsAffected())
+	p.log.Debugf("deleted rows: %v", result.RowsAffected())
 	return nil
 }

@@ -50,6 +50,6 @@ func (c *deleteProductHandler) Handle(ctx context.Context, command *DeleteProduc
 		Headers: tracing.GetKafkaTracingHeadersFromSpanCtx(span.Context()),
 	}
 
-	c.log.Infof("delete product: %s", command.ProductID.String())
+	c.log.Debugf("delete product: %s", command.ProductID.String())
 	return c.kafkaProducer.PublishMessage(ctx, message)
 }
