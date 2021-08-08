@@ -6,6 +6,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/config"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/models"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 )
@@ -21,6 +22,8 @@ func NewProductRepository(log logger.Logger, cfg *config.Config, db *pgxpool.Poo
 }
 
 func (p *productRepository) CreateProduct(ctx context.Context, product *models.Product) (*models.Product, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "productRepository.CreateProduct")
+	defer span.Finish()
 
 	var created models.Product
 	if err := p.db.QueryRow(ctx, createProductQuery, &product.ProductID, &product.Name, &product.Description, &product.Price).Scan(

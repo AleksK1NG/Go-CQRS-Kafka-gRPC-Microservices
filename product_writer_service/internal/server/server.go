@@ -6,12 +6,14 @@ import (
 	kafkaClient "github.com/AleksK1NG/cqrs-microservices/pkg/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/postgres"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/config"
 	kafkaConsumer "github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/delivery/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/repository"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/service"
 	"github.com/go-playground/validator"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	"github.com/segmentio/kafka-go"
 	"os"
@@ -75,6 +77,15 @@ func (s *server) Run() error {
 
 	s.runHealthCheck(ctx)
 	s.runMetrics(cancel)
+
+	if s.cfg.Jaeger.Enable {
+		tracer, closer, err := tracing.NewJaegerTracer(s.cfg.Jaeger)
+		if err != nil {
+			return err
+		}
+		defer closer.Close() // nolint: errcheck
+		opentracing.SetGlobalTracer(tracer)
+	}
 
 	<-ctx.Done()
 	grpcServer.GracefulStop()
