@@ -202,6 +202,8 @@ func ParseErrors(err error, debug bool) RestErr {
 		return NewRestError(http.StatusUnauthorized, ErrUnauthorized, err.Error(), debug)
 	case strings.Contains(strings.ToLower(err.Error()), "bcrypt"):
 		return NewRestError(http.StatusBadRequest, ErrBadRequest, err.Error(), debug)
+	case strings.Contains(strings.ToLower(err.Error()), "no documents in result"):
+		return NewRestError(http.StatusNotFound, ErrNotFound, err.Error(), debug)
 	default:
 		if restErr, ok := err.(*RestError); ok {
 			return restErr

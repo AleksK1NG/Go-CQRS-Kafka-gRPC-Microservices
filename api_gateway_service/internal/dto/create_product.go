@@ -8,3 +8,7 @@ type CreateProductDto struct {
 	Description string    `json:"description" validate:"required,gte=0,lte=5000"`
 	Price       float64   `json:"price" validate:"required,gte=0"`
 }
+
+type CreateProductResponseDto struct {
+	ProductID uuid.UUID `json:"productId" validate:"required"`
+}
