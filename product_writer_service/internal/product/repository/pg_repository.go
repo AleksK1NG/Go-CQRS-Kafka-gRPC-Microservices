@@ -80,3 +80,17 @@ func (p *productRepository) GetProductById(ctx context.Context, uuid uuid.UUID) 
 	p.log.Debugf("get product by id: %+v", product)
 	return &product, nil
 }
+
+func (p *productRepository) DeleteProductByID(ctx context.Context, uuid uuid.UUID) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "productRepository.DeleteProductByID")
+	defer span.Finish()
+
+	deleteProductByIdQuery := `DELETE FROM products WHERE product_id = $1`
+	result, err := p.db.Exec(ctx, deleteProductByIdQuery, uuid)
+	if err != nil {
+		return errors.Wrap(err, "Exec")
+	}
+
+	p.log.Infof("deleted rows: %v", result.RowsAffected())
+	return nil
+}
