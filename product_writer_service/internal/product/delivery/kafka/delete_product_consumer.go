@@ -11,20 +11,22 @@ import (
 )
 
 func (s *productMessageProcessor) processDeleteProduct(ctx context.Context, r *kafka.Reader, m kafka.Message) {
+	s.metrics.DeleteProductKafkaMessages.Inc()
+
 	ctx, span := tracing.StartKafkaConsumerTracerSpan(ctx, m.Headers, "productMessageProcessor.processDeleteProduct")
 	defer span.Finish()
 
 	msg := &kafkaMessages.ProductDelete{}
 	if err := proto.Unmarshal(m.Value, msg); err != nil {
 		s.log.WarnMsg("proto.Unmarshal", err)
-		s.commitMessage(ctx, r, m)
+		s.commitErrMessage(ctx, r, m)
 		return
 	}
 
 	proUUID, err := uuid.FromString(msg.GetProductID())
 	if err != nil {
 		s.log.WarnMsg("proto.Unmarshal", err)
-		s.commitMessage(ctx, r, m)
+		s.commitErrMessage(ctx, r, m)
 		return
 	}
 
@@ -32,9 +34,11 @@ func (s *productMessageProcessor) processDeleteProduct(ctx context.Context, r *k
 	err = s.ps.Commands.DeleteProduct.Handle(ctx, command)
 	if err != nil {
 		s.log.WarnMsg("DeleteProduct", err)
+		s.metrics.ErrorKafkaMessages.Inc()
 		return
 	}
 
 	s.log.Infof("processed delete product kafka message: %s", command.ProductID.String())
 	s.commitMessage(ctx, r, m)
+	s.metrics.SuccessKafkaMessages.Inc()
 }

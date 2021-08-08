@@ -11,36 +11,40 @@ import (
 )
 
 func (s *productMessageProcessor) processCreateProduct(ctx context.Context, r *kafka.Reader, m kafka.Message) {
+	s.metrics.CreateProductKafkaMessages.Inc()
+
 	ctx, span := tracing.StartKafkaConsumerTracerSpan(ctx, m.Headers, "productMessageProcessor.processCreateProduct")
 	defer span.Finish()
 
 	var msg kafkaMessages.ProductCreate
 	if err := proto.Unmarshal(m.Value, &msg); err != nil {
 		s.log.WarnMsg("proto.Unmarshal", err)
-		s.commitMessage(ctx, r, m)
+		s.commitErrMessage(ctx, r, m)
 		return
 	}
 
 	proUUID, err := uuid.FromString(msg.GetProductID())
 	if err != nil {
 		s.log.WarnMsg("proto.Unmarshal", err)
-		s.commitMessage(ctx, r, m)
+		s.commitErrMessage(ctx, r, m)
 		return
 	}
 
 	command := commands.NewCreateProductCommand(proUUID, msg.GetName(), msg.GetDescription(), msg.GetPrice())
 	if err := s.v.StructCtx(ctx, command); err != nil {
 		s.log.WarnMsg("validate", err)
-		s.commitMessage(ctx, r, m)
+		s.commitErrMessage(ctx, r, m)
 		return
 	}
 
 	err = s.ps.Commands.CreateProduct.Handle(ctx, command)
 	if err != nil {
+		s.metrics.ErrorKafkaMessages.Inc()
 		s.log.WarnMsg("CreateProduct", err)
 		return
 	}
 
 	s.log.Infof("processed create product kafka message: %s", command.ProductID.String())
 	s.commitMessage(ctx, r, m)
+	s.metrics.SuccessKafkaMessages.Inc()
 }

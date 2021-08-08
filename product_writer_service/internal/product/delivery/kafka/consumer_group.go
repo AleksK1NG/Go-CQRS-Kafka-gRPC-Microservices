@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/config"
+	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/metrics"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/service"
 	"github.com/go-playground/validator"
 	"github.com/segmentio/kafka-go"
@@ -15,14 +16,15 @@ const (
 )
 
 type productMessageProcessor struct {
-	log logger.Logger
-	cfg *config.Config
-	v   *validator.Validate
-	ps  *service.ProductService
+	log     logger.Logger
+	cfg     *config.Config
+	v       *validator.Validate
+	ps      *service.ProductService
+	metrics *metrics.WriterServiceMetrics
 }
 
-func NewProductMessageProcessor(log logger.Logger, cfg *config.Config, v *validator.Validate, ps *service.ProductService) *productMessageProcessor {
-	return &productMessageProcessor{log: log, cfg: cfg, v: v, ps: ps}
+func NewProductMessageProcessor(log logger.Logger, cfg *config.Config, v *validator.Validate, ps *service.ProductService, metrics *metrics.WriterServiceMetrics) *productMessageProcessor {
+	return &productMessageProcessor{log: log, cfg: cfg, v: v, ps: ps, metrics: metrics}
 }
 
 func (s *productMessageProcessor) ProcessMessages(ctx context.Context, r *kafka.Reader, wg *sync.WaitGroup, workerID int) {
