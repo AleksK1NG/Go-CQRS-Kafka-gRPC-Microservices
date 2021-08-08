@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"context"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/commands"
 	kafkaMessages "github.com/AleksK1NG/cqrs-microservices/proto/kafka"
 	uuid "github.com/satori/go.uuid"
@@ -10,6 +11,8 @@ import (
 )
 
 func (s *productMessageProcessor) processCreateProduct(ctx context.Context, r *kafka.Reader, m kafka.Message) {
+	ctx, span := tracing.StartKafkaConsumerTracerSpan(ctx, m.Headers, "productMessageProcessor.processCreateProduct")
+	defer span.Finish()
 
 	var msg kafkaMessages.ProductCreate
 	if err := proto.Unmarshal(m.Value, &msg); err != nil {

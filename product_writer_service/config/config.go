@@ -8,6 +8,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/postgres"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/probes"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"os"
@@ -27,6 +28,7 @@ type Config struct {
 	Postgresql  *postgres.Config    `mapstructure:"postgres"`
 	Kafka       *kafkaClient.Config `mapstructure:"kafka"`
 	Probes      probes.Config       `mapstructure:"probes"`
+	Jaeger      *tracing.Config     `mapstructure:"jaeger"`
 }
 
 type GRPC struct {
