@@ -5,10 +5,11 @@ import uuid "github.com/satori/go.uuid"
 type ProductCommands struct {
 	CreateProduct CreateProductCmdHandler
 	UpdateProduct UpdateProductCmdHandler
+	DeleteProduct DeleteProductCmdHandler
 }
 
-func NewProductCommands(createProduct CreateProductCmdHandler, updateProduct UpdateProductCmdHandler) *ProductCommands {
-	return &ProductCommands{CreateProduct: createProduct, UpdateProduct: updateProduct}
+func NewProductCommands(createProduct CreateProductCmdHandler, updateProduct UpdateProductCmdHandler, deleteProduct DeleteProductCmdHandler) *ProductCommands {
+	return &ProductCommands{CreateProduct: createProduct, UpdateProduct: updateProduct, DeleteProduct: deleteProduct}
 }
 
 type CreateProductCommand struct {
@@ -31,4 +32,12 @@ type UpdateProductCommand struct {
 
 func NewUpdateProductCommand(productID uuid.UUID, name string, description string, price float64) *UpdateProductCommand {
 	return &UpdateProductCommand{ProductID: productID, Name: name, Description: description, Price: price}
+}
+
+type DeleteProductCommand struct {
+	ProductID uuid.UUID `json:"productId" validate:"required"`
+}
+
+func NewDeleteProductCommand(productID uuid.UUID) *DeleteProductCommand {
+	return &DeleteProductCommand{ProductID: productID}
 }

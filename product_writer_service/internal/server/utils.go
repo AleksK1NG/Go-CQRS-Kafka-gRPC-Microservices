@@ -81,16 +81,39 @@ func (s *server) initKafkaTopics(ctx context.Context) {
 		ReplicationFactor: s.cfg.KafkaTopics.ProductUpdated.ReplicationFactor,
 	}
 
-	if err := conn.CreateTopics(productCreateTopic, productUpdateTopic, productCreatedTopic, productUpdatedTopic); err != nil {
+	productDeleteTopic := kafka.TopicConfig{
+		Topic:             s.cfg.KafkaTopics.ProductDelete.TopicName,
+		NumPartitions:     s.cfg.KafkaTopics.ProductDelete.Partitions,
+		ReplicationFactor: s.cfg.KafkaTopics.ProductDelete.ReplicationFactor,
+	}
+
+	productDeletedTopic := kafka.TopicConfig{
+		Topic:             s.cfg.KafkaTopics.ProductDeleted.TopicName,
+		NumPartitions:     s.cfg.KafkaTopics.ProductDeleted.Partitions,
+		ReplicationFactor: s.cfg.KafkaTopics.ProductDeleted.ReplicationFactor,
+	}
+
+	if err := conn.CreateTopics(
+		productCreateTopic,
+		productUpdateTopic,
+		productCreatedTopic,
+		productUpdatedTopic,
+		productDeleteTopic,
+		productDeletedTopic,
+	); err != nil {
 		s.log.WarnMsg("kafkaConn.CreateTopics", err)
 		return
 	}
 
-	s.log.Infof("kafka topics created or already exists: %+v", []kafka.TopicConfig{productCreateTopic, productUpdateTopic, productCreatedTopic, productUpdatedTopic})
+	s.log.Infof("kafka topics created or already exists: %+v", []kafka.TopicConfig{productCreateTopic, productUpdateTopic, productCreatedTopic, productUpdatedTopic, productDeleteTopic, productDeletedTopic})
 }
 
 func (s *server) getConsumerGroupTopics() []string {
-	return []string{s.cfg.KafkaTopics.ProductCreate.TopicName, s.cfg.KafkaTopics.ProductUpdate.TopicName}
+	return []string{
+		s.cfg.KafkaTopics.ProductCreate.TopicName,
+		s.cfg.KafkaTopics.ProductUpdate.TopicName,
+		s.cfg.KafkaTopics.ProductDelete.TopicName,
+	}
 }
 
 func (s *server) runHealthCheck(ctx context.Context) {

@@ -10,11 +10,11 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-func (s *productMessageProcessor) processUpdateProduct(ctx context.Context, r *kafka.Reader, m kafka.Message) {
-	ctx, span := tracing.StartKafkaConsumerTracerSpan(ctx, m.Headers, "productMessageProcessor.processUpdateProduct")
+func (s *productMessageProcessor) processDeleteProduct(ctx context.Context, r *kafka.Reader, m kafka.Message) {
+	ctx, span := tracing.StartKafkaConsumerTracerSpan(ctx, m.Headers, "productMessageProcessor.processDeleteProduct")
 	defer span.Finish()
 
-	msg := &kafkaMessages.ProductUpdate{}
+	msg := &kafkaMessages.ProductDelete{}
 	if err := proto.Unmarshal(m.Value, msg); err != nil {
 		s.log.WarnMsg("proto.Unmarshal", err)
 		s.commitMessage(ctx, r, m)
@@ -28,19 +28,13 @@ func (s *productMessageProcessor) processUpdateProduct(ctx context.Context, r *k
 		return
 	}
 
-	command := commands.NewUpdateProductCommand(proUUID, msg.GetName(), msg.GetDescription(), msg.GetPrice())
-	if err := s.v.StructCtx(ctx, command); err != nil {
-		s.log.WarnMsg("validate", err)
-		s.commitMessage(ctx, r, m)
-		return
-	}
-
-	err = s.ps.Commands.UpdateProduct.Handle(ctx, command)
+	command := commands.NewDeleteProductCommand(proUUID)
+	err = s.ps.Commands.DeleteProduct.Handle(ctx, command)
 	if err != nil {
-		s.log.WarnMsg("UpdateProduct", err)
+		s.log.WarnMsg("DeleteProduct", err)
 		return
 	}
 
-	s.log.Infof("processed update product kafka message: %s", command.ProductID.String())
+	s.log.Infof("processed delete product kafka message: %s", command.ProductID.String())
 	s.commitMessage(ctx, r, m)
 }

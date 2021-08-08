@@ -37,7 +37,7 @@ func (s *productMessageProcessor) processCreateProduct(ctx context.Context, r *k
 
 	err = s.ps.Commands.CreateProduct.Handle(ctx, command)
 	if err != nil {
-		s.log.WarnMsg("validate", err)
+		s.log.WarnMsg("CreateProduct", err)
 		return
 	}
 
