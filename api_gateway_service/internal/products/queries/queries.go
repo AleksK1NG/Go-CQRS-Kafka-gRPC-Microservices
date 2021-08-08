@@ -1,6 +1,9 @@
 package queries
 
-import "github.com/AleksK1NG/cqrs-microservices/pkg/utils"
+import (
+	"github.com/AleksK1NG/cqrs-microservices/pkg/utils"
+	uuid "github.com/satori/go.uuid"
+)
 
 type ProductQueries struct {
 	GetProductById GetProductByIdHandler
@@ -12,10 +15,10 @@ func NewProductQueries(getProductById GetProductByIdHandler, searchProduct Searc
 }
 
 type GetProductByIdQuery struct {
-	ProductID string `json:"productId" validate:"required,gte=0,lte=255"`
+	ProductID uuid.UUID `json:"productId" validate:"required,gte=0,lte=255"`
 }
 
-func NewGetProductByIdQuery(productID string) *GetProductByIdQuery {
+func NewGetProductByIdQuery(productID uuid.UUID) *GetProductByIdQuery {
 	return &GetProductByIdQuery{ProductID: productID}
 }
 

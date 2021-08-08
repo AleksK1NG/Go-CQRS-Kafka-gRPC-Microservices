@@ -14,6 +14,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/utils"
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
+	"github.com/opentracing/opentracing-go"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
 )
@@ -50,14 +51,14 @@ func (h *productsHandlers) CreateProduct() echo.HandlerFunc {
 		createDto := &dto.CreateProductDto{}
 		if err := c.Bind(createDto); err != nil {
 			h.log.WarnMsg("Bind", err)
-			h.metrics.ErrorHttpRequests.Inc()
+			h.traceErr(span, err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		createDto.ProductID = uuid.NewV4()
 		if err := h.v.StructCtx(ctx, createDto); err != nil {
 			h.log.WarnMsg("validate", err)
-			h.metrics.ErrorHttpRequests.Inc()
+			h.traceErr(span, err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
@@ -79,13 +80,14 @@ func (h *productsHandlers) GetProductByID() echo.HandlerFunc {
 		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.GetProductByID")
 		defer span.Finish()
 
-		query := queries.NewGetProductByIdQuery(c.Param("id"))
-		if err := h.v.StructCtx(ctx, query); err != nil {
-			h.log.WarnMsg("validate", err)
-			h.metrics.ErrorHttpRequests.Inc()
+		productUUID, err := uuid.FromString(c.Param("id"))
+		if err != nil {
+			h.log.WarnMsg("uuid.FromString", err)
+			h.traceErr(span, err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
+		query := queries.NewGetProductByIdQuery(productUUID)
 		response, err := h.ps.Queries.GetProductById.Handle(ctx, query)
 		if err != nil {
 			h.log.WarnMsg("GetProductById", err)
@@ -130,20 +132,20 @@ func (h *productsHandlers) UpdateProduct() echo.HandlerFunc {
 		productUUID, err := uuid.FromString(c.Param("id"))
 		if err != nil {
 			h.log.WarnMsg("uuid.FromString", err)
-			h.metrics.ErrorHttpRequests.Inc()
+			h.traceErr(span, err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		updateDto := &dto.UpdateProductDto{ProductID: productUUID}
 		if err := c.Bind(updateDto); err != nil {
 			h.log.WarnMsg("Bind", err)
-			h.metrics.ErrorHttpRequests.Inc()
+			h.traceErr(span, err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		if err := h.v.StructCtx(ctx, updateDto); err != nil {
 			h.log.WarnMsg("validate", err)
-			h.metrics.ErrorHttpRequests.Inc()
+			h.traceErr(span, err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
@@ -168,7 +170,7 @@ func (h *productsHandlers) DeleteProduct() echo.HandlerFunc {
 		productUUID, err := uuid.FromString(c.Param("id"))
 		if err != nil {
 			h.log.WarnMsg("uuid.FromString", err)
-			h.metrics.ErrorHttpRequests.Inc()
+			h.traceErr(span, err)
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
@@ -181,4 +183,10 @@ func (h *productsHandlers) DeleteProduct() echo.HandlerFunc {
 		h.metrics.SuccessHttpRequests.Inc()
 		return c.NoContent(http.StatusOK)
 	}
+}
+
+func (h *productsHandlers) traceErr(span opentracing.Span, err error) {
+	span.SetTag("error", true)
+	span.LogKV("error_code", err.Error())
+	h.metrics.ErrorHttpRequests.Inc()
 }

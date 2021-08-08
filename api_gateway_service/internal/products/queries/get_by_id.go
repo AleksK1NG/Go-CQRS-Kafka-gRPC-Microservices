@@ -29,10 +29,10 @@ func (q *getProductByIdHandler) Handle(ctx context.Context, query *GetProductByI
 	defer span.Finish()
 
 	ctx = tracing.InjectTextMapCarrierToGrpcMetaData(ctx, span.Context())
-	res, err := q.rsClient.GetProductById(ctx, &readerService.GetProductByIdReq{ProductID: query.ProductID})
+	res, err := q.rsClient.GetProductById(ctx, &readerService.GetProductByIdReq{ProductID: query.ProductID.String()})
 	if err != nil {
 		return nil, err
 	}
 
-	return dto.ProductResponseFromGrpc(res.GetProduct()), err
+	return dto.ProductResponseFromGrpc(res.GetProduct()), nil
 }

@@ -31,9 +31,7 @@ func (c *deleteProductHandler) Handle(ctx context.Context, command *DeleteProduc
 	span, ctx := opentracing.StartSpanFromContext(ctx, "deleteProductHandler.Handle")
 	defer span.Finish()
 
-	createDto := &kafkaMessages.ProductDelete{
-		ProductID: command.ProductID.String(),
-	}
+	createDto := &kafkaMessages.ProductDelete{ProductID: command.ProductID.String()}
 
 	dtoBytes, err := proto.Marshal(createDto)
 	if err != nil {

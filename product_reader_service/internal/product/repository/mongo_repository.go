@@ -31,12 +31,11 @@ func (p *mongoRepository) CreateProduct(ctx context.Context, product *models.Pro
 
 	collection := p.db.Database(p.cfg.Mongo.Db).Collection(p.cfg.MongoCollections.Products)
 
-	insertedID, err := collection.InsertOne(ctx, product, &options.InsertOneOptions{})
+	_, err := collection.InsertOne(ctx, product, &options.InsertOneOptions{})
 	if err != nil {
+		p.traceErr(span, err)
 		return nil, errors.Wrap(err, "InsertOne")
 	}
-
-	p.log.Infof("INSERTED ID: %+v", insertedID)
 
 	return product, nil
 }
@@ -53,10 +52,11 @@ func (p *mongoRepository) UpdateProduct(ctx context.Context, product *models.Pro
 
 	var updated models.Product
 	if err := collection.FindOneAndUpdate(ctx, bson.M{"_id": product.ProductID}, bson.M{"$set": product}, ops).Decode(&updated); err != nil {
+		p.traceErr(span, err)
 		return nil, errors.Wrap(err, "Decode")
 	}
 
-	p.log.Infof("UPDATED ID: %+v", updated)
+	p.log.Debugf("updated id: %+v", updated)
 	return &updated, nil
 }
 
@@ -68,10 +68,11 @@ func (p *mongoRepository) GetProductById(ctx context.Context, uuid uuid.UUID) (*
 
 	var product models.Product
 	if err := collection.FindOne(ctx, bson.M{"_id": uuid.String()}).Decode(&product); err != nil {
+		p.traceErr(span, err)
 		return nil, errors.Wrap(err, "Decode")
 	}
 
-	p.log.Infof("GET PRODUCT BY ID ID: %+v", product)
+	p.log.Debugf("get product by id: %+v", product)
 	return &product, nil
 }
 
@@ -99,6 +100,7 @@ func (p *mongoRepository) Search(ctx context.Context, search string, pagination 
 
 	count, err := collection.CountDocuments(ctx, filter)
 	if err != nil {
+		p.traceErr(span, err)
 		return nil, errors.Wrap(err, "CountDocuments")
 	}
 	if count == 0 {
@@ -112,6 +114,7 @@ func (p *mongoRepository) Search(ctx context.Context, search string, pagination 
 		Skip:  &skip,
 	})
 	if err != nil {
+		p.traceErr(span, err)
 		return nil, errors.Wrap(err, "Find")
 	}
 	defer cursor.Close(ctx)
@@ -121,14 +124,22 @@ func (p *mongoRepository) Search(ctx context.Context, search string, pagination 
 	for cursor.Next(ctx) {
 		var prod models.Product
 		if err := cursor.Decode(&prod); err != nil {
+			p.traceErr(span, err)
 			return nil, errors.Wrap(err, "Find")
 		}
 		products = append(products, &prod)
 	}
 
 	if err := cursor.Err(); err != nil {
+		span.SetTag("error", true)
+		span.LogKV("error_code", err.Error())
 		return nil, errors.Wrap(err, "cursor.Err")
 	}
 
 	return models.NewProductListWithPagination(products, count, pagination), nil
+}
+
+func (p *mongoRepository) traceErr(span opentracing.Span, err error) {
+	span.SetTag("error", true)
+	span.LogKV("error_code", err.Error())
 }
