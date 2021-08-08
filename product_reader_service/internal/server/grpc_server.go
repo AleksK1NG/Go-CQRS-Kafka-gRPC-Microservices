@@ -46,7 +46,7 @@ func (s *server) newReaderGrpcServer() (func() error, *grpc.Server, error) {
 		),
 	)
 
-	readerGrpcService := readerGrpc.NewReaderGrpcService(s.log, s.cfg, s.v, s.ps)
+	readerGrpcService := readerGrpc.NewReaderGrpcService(s.log, s.cfg, s.v, s.ps, s.metrics)
 	readerService.RegisterReaderServiceServer(grpcServer, readerGrpcService)
 	grpc_prometheus.Register(grpcServer)
 
