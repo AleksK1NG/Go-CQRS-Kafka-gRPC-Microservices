@@ -123,3 +123,11 @@ func InjectTextMapCarrier(spanCtx opentracing.SpanContext) (opentracing.TextMapC
 	}
 	return m, nil
 }
+
+func InjectTextMapCarrierToGrpcMetaData(ctx context.Context, spanCtx opentracing.SpanContext) context.Context {
+	if textMapCarrier, err := InjectTextMapCarrier(spanCtx); err == nil {
+		md := metadata.New(textMapCarrier)
+		ctx = metadata.NewOutgoingContext(ctx, md)
+	}
+	return ctx
+}
