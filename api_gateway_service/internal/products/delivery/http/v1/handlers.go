@@ -19,13 +19,13 @@ import (
 )
 
 type productsHandlers struct {
-	group     *echo.Group
-	log       logger.Logger
-	mw        middlewares.MiddlewareManager
-	cfg       *config.Config
-	ps        *service.ProductService
-	v         *validator.Validate
-	agMetrics *metrics.ApiGatewayMetrics
+	group   *echo.Group
+	log     logger.Logger
+	mw      middlewares.MiddlewareManager
+	cfg     *config.Config
+	ps      *service.ProductService
+	v       *validator.Validate
+	metrics *metrics.ApiGatewayMetrics
 }
 
 func NewProductsHandlers(
@@ -35,14 +35,14 @@ func NewProductsHandlers(
 	cfg *config.Config,
 	ps *service.ProductService,
 	v *validator.Validate,
-	agMetrics *metrics.ApiGatewayMetrics,
+	metrics *metrics.ApiGatewayMetrics,
 ) *productsHandlers {
-	return &productsHandlers{group: group, log: log, mw: mw, cfg: cfg, ps: ps, v: v, agMetrics: agMetrics}
+	return &productsHandlers{group: group, log: log, mw: mw, cfg: cfg, ps: ps, v: v, metrics: metrics}
 }
 
 func (h *productsHandlers) CreateProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		h.agMetrics.CreateProductHttpRequests.Inc()
+		h.metrics.CreateProductHttpRequests.Inc()
 
 		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.CreateProduct")
 		defer span.Finish()
@@ -50,31 +50,31 @@ func (h *productsHandlers) CreateProduct() echo.HandlerFunc {
 		createDto := &dto.CreateProductDto{}
 		if err := c.Bind(createDto); err != nil {
 			h.log.WarnMsg("Bind", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
+			h.metrics.ErrorHttpRequests.Inc()
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		createDto.ProductID = uuid.NewV4()
 		if err := h.v.StructCtx(ctx, createDto); err != nil {
 			h.log.WarnMsg("validate", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
+			h.metrics.ErrorHttpRequests.Inc()
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		if err := h.ps.Commands.CreateProduct.Handle(ctx, commands.NewCreateProductCommand(createDto)); err != nil {
 			h.log.WarnMsg("CreateProduct", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
+			h.metrics.ErrorHttpRequests.Inc()
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
-		h.agMetrics.SuccessHttpRequests.Inc()
+		h.metrics.SuccessHttpRequests.Inc()
 		return c.JSON(http.StatusCreated, dto.CreateProductResponseDto{ProductID: createDto.ProductID})
 	}
 }
 
 func (h *productsHandlers) GetProductByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		h.agMetrics.GetProductByIdHttpRequests.Inc()
+		h.metrics.GetProductByIdHttpRequests.Inc()
 
 		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.GetProductByID")
 		defer span.Finish()
@@ -82,25 +82,25 @@ func (h *productsHandlers) GetProductByID() echo.HandlerFunc {
 		query := queries.NewGetProductByIdQuery(c.Param("id"))
 		if err := h.v.StructCtx(ctx, query); err != nil {
 			h.log.WarnMsg("validate", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
+			h.metrics.ErrorHttpRequests.Inc()
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		response, err := h.ps.Queries.GetProductById.Handle(ctx, query)
 		if err != nil {
 			h.log.WarnMsg("GetProductById", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
+			h.metrics.ErrorHttpRequests.Inc()
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
-		h.agMetrics.SuccessHttpRequests.Inc()
+		h.metrics.SuccessHttpRequests.Inc()
 		return c.JSON(http.StatusOK, response)
 	}
 }
 
 func (h *productsHandlers) SearchProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		h.agMetrics.SearchProductHttpRequests.Inc()
+		h.metrics.SearchProductHttpRequests.Inc()
 
 		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.SearchProduct")
 		defer span.Finish()
@@ -111,18 +111,18 @@ func (h *productsHandlers) SearchProduct() echo.HandlerFunc {
 		response, err := h.ps.Queries.SearchProduct.Handle(ctx, query)
 		if err != nil {
 			h.log.WarnMsg("SearchProduct", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
+			h.metrics.ErrorHttpRequests.Inc()
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
-		h.agMetrics.SuccessHttpRequests.Inc()
+		h.metrics.SuccessHttpRequests.Inc()
 		return c.JSON(http.StatusOK, response)
 	}
 }
 
 func (h *productsHandlers) UpdateProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		h.agMetrics.UpdateProductHttpRequests.Inc()
+		h.metrics.UpdateProductHttpRequests.Inc()
 
 		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.UpdateProduct")
 		defer span.Finish()
@@ -130,37 +130,37 @@ func (h *productsHandlers) UpdateProduct() echo.HandlerFunc {
 		productUUID, err := uuid.FromString(c.Param("id"))
 		if err != nil {
 			h.log.WarnMsg("uuid.FromString", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
+			h.metrics.ErrorHttpRequests.Inc()
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		updateDto := &dto.UpdateProductDto{ProductID: productUUID}
 		if err := c.Bind(updateDto); err != nil {
 			h.log.WarnMsg("Bind", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
+			h.metrics.ErrorHttpRequests.Inc()
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		if err := h.v.StructCtx(ctx, updateDto); err != nil {
 			h.log.WarnMsg("validate", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
+			h.metrics.ErrorHttpRequests.Inc()
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		if err := h.ps.Commands.UpdateProduct.Handle(ctx, commands.NewUpdateProductCommand(updateDto)); err != nil {
 			h.log.WarnMsg("UpdateProduct", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
+			h.metrics.ErrorHttpRequests.Inc()
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
-		h.agMetrics.SuccessHttpRequests.Inc()
+		h.metrics.SuccessHttpRequests.Inc()
 		return c.JSON(http.StatusOK, updateDto)
 	}
 }
 
 func (h *productsHandlers) DeleteProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		h.agMetrics.DeleteProductHttpRequests.Inc()
+		h.metrics.DeleteProductHttpRequests.Inc()
 
 		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.DeleteProduct")
 		defer span.Finish()
@@ -168,17 +168,17 @@ func (h *productsHandlers) DeleteProduct() echo.HandlerFunc {
 		productUUID, err := uuid.FromString(c.Param("id"))
 		if err != nil {
 			h.log.WarnMsg("uuid.FromString", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
+			h.metrics.ErrorHttpRequests.Inc()
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		if err := h.ps.Commands.DeleteProduct.Handle(ctx, commands.NewDeleteProductCommand(productUUID)); err != nil {
 			h.log.WarnMsg("DeleteProduct", err)
-			h.agMetrics.ErrorHttpRequests.Inc()
+			h.metrics.ErrorHttpRequests.Inc()
 			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
-		h.agMetrics.SuccessHttpRequests.Inc()
+		h.metrics.SuccessHttpRequests.Inc()
 		return c.NoContent(http.StatusOK)
 	}
 }
