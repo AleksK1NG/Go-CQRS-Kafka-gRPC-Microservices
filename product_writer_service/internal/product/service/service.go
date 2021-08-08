@@ -18,10 +18,11 @@ func NewProductService(log logger.Logger, cfg *config.Config, pgRepo repository.
 
 	updateProductHandler := commands.NewUpdateProductHandler(log, cfg, pgRepo, kafkaProducer)
 	createProductHandler := commands.NewCreateProductHandler(log, cfg, pgRepo, kafkaProducer)
+	deleteProductHandler := commands.NewDeleteProductHandler(log, cfg, pgRepo, kafkaProducer)
 
 	getProductByIdHandler := queries.NewGetProductByIdHandler(log, cfg, pgRepo)
 
-	productCommands := commands.NewProductCommands(createProductHandler, updateProductHandler)
+	productCommands := commands.NewProductCommands(createProductHandler, updateProductHandler, deleteProductHandler)
 	productQueries := queries.NewProductQueries(getProductByIdHandler)
 
 	return &ProductService{Commands: productCommands, Queries: productQueries}
