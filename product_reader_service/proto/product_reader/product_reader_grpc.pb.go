@@ -21,6 +21,7 @@ type ReaderServiceClient interface {
 	UpdateProduct(ctx context.Context, in *UpdateProductReq, opts ...grpc.CallOption) (*UpdateProductRes, error)
 	GetProductById(ctx context.Context, in *GetProductByIdReq, opts ...grpc.CallOption) (*GetProductByIdRes, error)
 	SearchProduct(ctx context.Context, in *SearchReq, opts ...grpc.CallOption) (*SearchRes, error)
+	DeleteProductByID(ctx context.Context, in *DeleteProductByIdReq, opts ...grpc.CallOption) (*DeleteProductByIdRes, error)
 }
 
 type readerServiceClient struct {
@@ -67,6 +68,15 @@ func (c *readerServiceClient) SearchProduct(ctx context.Context, in *SearchReq, 
 	return out, nil
 }
 
+func (c *readerServiceClient) DeleteProductByID(ctx context.Context, in *DeleteProductByIdReq, opts ...grpc.CallOption) (*DeleteProductByIdRes, error) {
+	out := new(DeleteProductByIdRes)
+	err := c.cc.Invoke(ctx, "/readerService.readerService/DeleteProductByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ReaderServiceServer is the server API for ReaderService service.
 // All implementations should embed UnimplementedReaderServiceServer
 // for forward compatibility
@@ -75,6 +85,7 @@ type ReaderServiceServer interface {
 	UpdateProduct(context.Context, *UpdateProductReq) (*UpdateProductRes, error)
 	GetProductById(context.Context, *GetProductByIdReq) (*GetProductByIdRes, error)
 	SearchProduct(context.Context, *SearchReq) (*SearchRes, error)
+	DeleteProductByID(context.Context, *DeleteProductByIdReq) (*DeleteProductByIdRes, error)
 }
 
 // UnimplementedReaderServiceServer should be embedded to have forward compatible implementations.
@@ -92,6 +103,9 @@ func (UnimplementedReaderServiceServer) GetProductById(context.Context, *GetProd
 }
 func (UnimplementedReaderServiceServer) SearchProduct(context.Context, *SearchReq) (*SearchRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchProduct not implemented")
+}
+func (UnimplementedReaderServiceServer) DeleteProductByID(context.Context, *DeleteProductByIdReq) (*DeleteProductByIdRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteProductByID not implemented")
 }
 
 // UnsafeReaderServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -177,6 +191,24 @@ func _ReaderService_SearchProduct_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ReaderService_DeleteProductByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteProductByIdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReaderServiceServer).DeleteProductByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/readerService.readerService/DeleteProductByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReaderServiceServer).DeleteProductByID(ctx, req.(*DeleteProductByIdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _ReaderService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "readerService.readerService",
 	HandlerType: (*ReaderServiceServer)(nil),
@@ -196,6 +228,10 @@ var _ReaderService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchProduct",
 			Handler:    _ReaderService_SearchProduct_Handler,
+		},
+		{
+			MethodName: "DeleteProductByID",
+			Handler:    _ReaderService_DeleteProductByID_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

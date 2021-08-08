@@ -49,6 +49,7 @@ type MongoCollections struct {
 type KafkaTopics struct {
 	ProductCreated kafkaClient.TopicConfig `mapstructure:"productCreated"`
 	ProductUpdated kafkaClient.TopicConfig `mapstructure:"productUpdated"`
+	ProductDeleted kafkaClient.TopicConfig `mapstructure:"productDeleted"`
 }
 
 type ServiceSettings struct {

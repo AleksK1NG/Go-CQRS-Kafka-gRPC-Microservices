@@ -588,6 +588,91 @@ func (x *SearchRes) GetProducts() []*Product {
 	return nil
 }
 
+type DeleteProductByIdReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ProductID string `protobuf:"bytes,1,opt,name=ProductID,proto3" json:"ProductID,omitempty"`
+}
+
+func (x *DeleteProductByIdReq) Reset() {
+	*x = DeleteProductByIdReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_product_reader_messages_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DeleteProductByIdReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteProductByIdReq) ProtoMessage() {}
+
+func (x *DeleteProductByIdReq) ProtoReflect() protoreflect.Message {
+	mi := &file_product_reader_messages_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteProductByIdReq.ProtoReflect.Descriptor instead.
+func (*DeleteProductByIdReq) Descriptor() ([]byte, []int) {
+	return file_product_reader_messages_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *DeleteProductByIdReq) GetProductID() string {
+	if x != nil {
+		return x.ProductID
+	}
+	return ""
+}
+
+type DeleteProductByIdRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *DeleteProductByIdRes) Reset() {
+	*x = DeleteProductByIdRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_product_reader_messages_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DeleteProductByIdRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteProductByIdRes) ProtoMessage() {}
+
+func (x *DeleteProductByIdRes) ProtoReflect() protoreflect.Message {
+	mi := &file_product_reader_messages_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteProductByIdRes.ProtoReflect.Descriptor instead.
+func (*DeleteProductByIdRes) Descriptor() ([]byte, []int) {
+	return file_product_reader_messages_proto_rawDescGZIP(), []int{10}
+}
+
 var File_product_reader_messages_proto protoreflect.FileDescriptor
 
 var file_product_reader_messages_proto_rawDesc = []byte{
@@ -657,8 +742,13 @@ var file_product_reader_messages_proto_rawDesc = []byte{
 	0x12, 0x32, 0x0a, 0x08, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x73, 0x18, 0x06, 0x20, 0x03,
 	0x28, 0x0b, 0x32, 0x16, 0x2e, 0x72, 0x65, 0x61, 0x64, 0x65, 0x72, 0x53, 0x65, 0x72, 0x76, 0x69,
 	0x63, 0x65, 0x2e, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x08, 0x50, 0x72, 0x6f, 0x64,
-	0x75, 0x63, 0x74, 0x73, 0x42, 0x12, 0x5a, 0x10, 0x2e, 0x2f, 0x3b, 0x72, 0x65, 0x61, 0x64, 0x65,
-	0x72, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x75, 0x63, 0x74, 0x73, 0x22, 0x34, 0x0a, 0x14, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x50, 0x72,
+	0x6f, 0x64, 0x75, 0x63, 0x74, 0x42, 0x79, 0x49, 0x64, 0x52, 0x65, 0x71, 0x12, 0x1c, 0x0a, 0x09,
+	0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x09, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x49, 0x44, 0x22, 0x16, 0x0a, 0x14, 0x44, 0x65,
+	0x6c, 0x65, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x42, 0x79, 0x49, 0x64, 0x52,
+	0x65, 0x73, 0x42, 0x12, 0x5a, 0x10, 0x2e, 0x2f, 0x3b, 0x72, 0x65, 0x61, 0x64, 0x65, 0x72, 0x53,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -673,7 +763,7 @@ func file_product_reader_messages_proto_rawDescGZIP() []byte {
 	return file_product_reader_messages_proto_rawDescData
 }
 
-var file_product_reader_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_product_reader_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_product_reader_messages_proto_goTypes = []interface{}{
 	(*Product)(nil),               // 0: readerService.Product
 	(*CreateProductReq)(nil),      // 1: readerService.CreateProductReq
@@ -684,18 +774,20 @@ var file_product_reader_messages_proto_goTypes = []interface{}{
 	(*GetProductByIdRes)(nil),     // 6: readerService.GetProductByIdRes
 	(*SearchReq)(nil),             // 7: readerService.SearchReq
 	(*SearchRes)(nil),             // 8: readerService.SearchRes
-	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
+	(*DeleteProductByIdReq)(nil),  // 9: readerService.DeleteProductByIdReq
+	(*DeleteProductByIdRes)(nil),  // 10: readerService.DeleteProductByIdRes
+	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
 }
 var file_product_reader_messages_proto_depIdxs = []int32{
-	9, // 0: readerService.Product.CreatedAt:type_name -> google.protobuf.Timestamp
-	9, // 1: readerService.Product.UpdatedAt:type_name -> google.protobuf.Timestamp
-	0, // 2: readerService.GetProductByIdRes.Product:type_name -> readerService.Product
-	0, // 3: readerService.SearchRes.Products:type_name -> readerService.Product
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	11, // 0: readerService.Product.CreatedAt:type_name -> google.protobuf.Timestamp
+	11, // 1: readerService.Product.UpdatedAt:type_name -> google.protobuf.Timestamp
+	0,  // 2: readerService.GetProductByIdRes.Product:type_name -> readerService.Product
+	0,  // 3: readerService.SearchRes.Products:type_name -> readerService.Product
+	4,  // [4:4] is the sub-list for method output_type
+	4,  // [4:4] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_product_reader_messages_proto_init() }
@@ -812,6 +904,30 @@ func file_product_reader_messages_proto_init() {
 				return nil
 			}
 		}
+		file_product_reader_messages_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteProductByIdReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_product_reader_messages_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteProductByIdRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -819,7 +935,7 @@ func file_product_reader_messages_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_product_reader_messages_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
