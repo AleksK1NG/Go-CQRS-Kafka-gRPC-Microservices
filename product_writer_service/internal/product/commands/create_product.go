@@ -10,9 +10,9 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/internal/product/repository"
 	"github.com/AleksK1NG/cqrs-microservices/product_writer_service/mappers"
 	kafkaMessages "github.com/AleksK1NG/cqrs-microservices/proto/kafka"
-	"github.com/golang/protobuf/proto"
 	"github.com/opentracing/opentracing-go"
 	"github.com/segmentio/kafka-go"
+	"google.golang.org/protobuf/proto"
 	"time"
 )
 
