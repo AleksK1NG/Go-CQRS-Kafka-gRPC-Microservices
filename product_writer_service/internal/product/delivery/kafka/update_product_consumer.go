@@ -40,11 +40,9 @@ func (s *productMessageProcessor) processUpdateProduct(ctx context.Context, r *k
 	err = s.ps.Commands.UpdateProduct.Handle(ctx, command)
 	if err != nil {
 		s.metrics.ErrorKafkaMessages.Inc()
-		s.log.WarnMsg("UpdateProduct", err)
+		s.log.WarnMsg("UpdateProduct.Handle", err)
 		return
 	}
 
-	s.log.Infof("processed update product kafka message: %s", command.ProductID.String())
 	s.commitMessage(ctx, r, m)
-	s.metrics.SuccessKafkaMessages.Inc()
 }

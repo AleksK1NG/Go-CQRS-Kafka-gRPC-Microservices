@@ -32,12 +32,10 @@ func (s *readerMessageProcessor) processProductDeleted(ctx context.Context, r *k
 
 	command := commands.NewDeleteProductCommand(productUUID)
 	if err := s.ps.Commands.DeleteProduct.Handle(ctx, command); err != nil {
-		s.log.WarnMsg("DeleteProduct", err)
+		s.log.WarnMsg("DeleteProduct.Handle", err)
 		s.metrics.ErrorKafkaMessages.Inc()
 		return
 	}
 
-	s.log.Infof("processed delete product kafka message: %s", productUUID.String())
 	s.commitMessage(ctx, r, m)
-	s.metrics.SuccessKafkaMessages.Inc()
 }
