@@ -31,12 +31,10 @@ func (s *readerMessageProcessor) processProductCreated(ctx context.Context, r *k
 	}
 
 	if err := s.ps.Commands.CreateProduct.Handle(ctx, command); err != nil {
-		s.log.WarnMsg("CreateProduct", err)
+		s.log.WarnMsg("CreateProduct.Handle", err)
 		s.metrics.ErrorKafkaMessages.Inc()
 		return
 	}
 
-	s.log.Infof("processed create product kafka message: %s", p.String())
 	s.commitMessage(ctx, r, m)
-	s.metrics.SuccessKafkaMessages.Inc()
 }

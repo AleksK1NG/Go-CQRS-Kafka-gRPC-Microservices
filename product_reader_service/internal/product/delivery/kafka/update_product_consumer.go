@@ -36,7 +36,5 @@ func (s *readerMessageProcessor) processProductUpdated(ctx context.Context, r *k
 		return
 	}
 
-	s.log.Infof("processed update product kafka message: %s", p.String())
 	s.commitMessage(ctx, r, m)
-	s.metrics.SuccessKafkaMessages.Inc()
 }
