@@ -4,7 +4,7 @@ WORKDIR /app
 
 ENV CONFIG=docker
 
-COPY . /app
+COPY .. /app
 
 RUN go get github.com/githubnemo/CompileDaemon
 RUN go mod download
