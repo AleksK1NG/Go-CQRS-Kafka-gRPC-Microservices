@@ -6,7 +6,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/internal/dto"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
-	readerService "github.com/AleksK1NG/cqrs-microservices/product_reader_service/proto/product_reader"
+	readerService "github.com/AleksK1NG/cqrs-microservices/reader_service/proto/product_reader"
 	"github.com/opentracing/opentracing-go"
 )
 
