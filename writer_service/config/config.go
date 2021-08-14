@@ -74,7 +74,24 @@ func InitConfig() (*Config, error) {
 
 	grpcPort := os.Getenv(constants.GrpcPort)
 	if grpcPort != "" {
-		cfg.GRPC.Port = grpcPort
+		cfg.GRPC.Port = ":5003"
+	}
+
+	postgresHost := os.Getenv("POSTGRES_HOST")
+	if postgresHost != "" {
+		cfg.Postgresql.Host = postgresHost
+	}
+	postgresPort := os.Getenv("POSTGRES_PORT")
+	if postgresPort != "" {
+		cfg.Postgresql.Port = postgresPort
+	}
+	jaegerAddr := os.Getenv("JAEGER_HOST")
+	if jaegerAddr != "" {
+		cfg.Jaeger.HostPort = jaegerAddr
+	}
+	kafkaBrokers := os.Getenv("KAFKA_BROKERS")
+	if kafkaBrokers != "" {
+		cfg.Kafka.Brokers = []string{"host.docker.internal:9092"}
 	}
 
 	return cfg, nil

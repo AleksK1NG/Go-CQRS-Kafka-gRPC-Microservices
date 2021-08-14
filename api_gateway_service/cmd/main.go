@@ -22,7 +22,7 @@ func main() {
 	appLogger.InitLogger()
 	appLogger.WithName("API_Gateway")
 
-	appLogger.Infof("CFG: %+v", cfg)
+	appLogger.Infof("CFG ReaderServicePort: %s", cfg.Grpc.ReaderServicePort)
 
 	s := server.NewServer(appLogger, cfg)
 	appLogger.Fatal(s.Run())
