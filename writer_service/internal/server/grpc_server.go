@@ -56,7 +56,7 @@ func (s *server) newWriterGrpcServer() (func() error, *grpc.Server, error) {
 	}
 
 	go func() {
-		s.log.Infof("Product Writer gRPC server is listening on port: %s", s.cfg.GRPC.Port)
+		s.log.Infof("Writer gRPC server is listening on port: %s", s.cfg.GRPC.Port)
 		s.log.Fatal(grpcServer.Serve(l))
 	}()
 

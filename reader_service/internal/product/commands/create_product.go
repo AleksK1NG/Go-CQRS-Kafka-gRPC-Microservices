@@ -42,7 +42,6 @@ func (c *createProductHandler) Handle(ctx context.Context, command *CreateProduc
 		return err
 	}
 
-	c.log.Debugf("created product: %+v", created)
 	c.redisRepo.PutProduct(ctx, created.ProductID, created)
 	return nil
 }

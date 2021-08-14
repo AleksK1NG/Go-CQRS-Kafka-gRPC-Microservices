@@ -49,7 +49,7 @@ func (s *grpcService) CreateProduct(ctx context.Context, req *writerService.Crea
 
 	err = s.ps.Commands.CreateProduct.Handle(ctx, command)
 	if err != nil {
-		s.log.WarnMsg("CreateProduct", err)
+		s.log.WarnMsg("CreateProduct.Handle", err)
 		return nil, s.errResponse(codes.Internal, err)
 	}
 
@@ -77,7 +77,7 @@ func (s *grpcService) UpdateProduct(ctx context.Context, req *writerService.Upda
 
 	err = s.ps.Commands.UpdateProduct.Handle(ctx, command)
 	if err != nil {
-		s.log.WarnMsg("UpdateProduct", err)
+		s.log.WarnMsg("UpdateProduct.Handle", err)
 		return nil, s.errResponse(codes.Internal, err)
 	}
 
@@ -105,7 +105,7 @@ func (s *grpcService) GetProductById(ctx context.Context, req *writerService.Get
 
 	product, err := s.ps.Queries.GetProductById.Handle(ctx, query)
 	if err != nil {
-		s.log.WarnMsg("GetProductById", err)
+		s.log.WarnMsg("GetProductById.Handle", err)
 		return nil, s.errResponse(codes.Internal, err)
 	}
 

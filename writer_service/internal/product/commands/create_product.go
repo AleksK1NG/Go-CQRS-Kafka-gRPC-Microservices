@@ -55,6 +55,5 @@ func (c *createProductHandler) Handle(ctx context.Context, command *CreateProduc
 		Headers: tracing.GetKafkaTracingHeadersFromSpanCtx(span.Context()),
 	}
 
-	c.log.Debugf("created product: %+v", product)
 	return c.kafkaProducer.PublishMessage(ctx, message)
 }

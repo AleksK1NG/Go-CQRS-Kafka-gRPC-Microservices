@@ -34,6 +34,7 @@ func (r *redisRepository) PutProduct(ctx context.Context, key string, product *m
 		r.log.WarnMsg("json.Marshal", err)
 		return
 	}
+
 	if err := r.redisClient.HSetNX(ctx, r.getRedisProductPrefixKey(), key, productBytes).Err(); err != nil {
 		r.log.WarnMsg("redisClient.HSetNX", err)
 		return

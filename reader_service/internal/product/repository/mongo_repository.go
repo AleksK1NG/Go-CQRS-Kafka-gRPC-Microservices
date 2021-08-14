@@ -56,7 +56,6 @@ func (p *mongoRepository) UpdateProduct(ctx context.Context, product *models.Pro
 		return nil, errors.Wrap(err, "Decode")
 	}
 
-	p.log.Debugf("updated id: %+v", updated)
 	return &updated, nil
 }
 
@@ -72,7 +71,6 @@ func (p *mongoRepository) GetProductById(ctx context.Context, uuid uuid.UUID) (*
 		return nil, errors.Wrap(err, "Decode")
 	}
 
-	p.log.Debugf("get product by id: %+v", product)
 	return &product, nil
 }
 
