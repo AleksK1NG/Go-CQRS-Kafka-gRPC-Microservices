@@ -41,7 +41,6 @@ func (c *updateProductCmdHandler) Handle(ctx context.Context, command *UpdatePro
 		return err
 	}
 
-	c.log.Debugf("updated product: %+v", updated)
 	c.redisRepo.PutProduct(ctx, updated.ProductID, updated)
 	return nil
 }

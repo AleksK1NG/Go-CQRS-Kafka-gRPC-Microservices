@@ -55,6 +55,5 @@ func (c *updateProductHandler) Handle(ctx context.Context, command *UpdateProduc
 		Headers: tracing.GetKafkaTracingHeadersFromSpanCtx(span.Context()),
 	}
 
-	c.log.Debugf("updated product: %+v", product)
 	return c.kafkaProducer.PublishMessage(ctx, message)
 }

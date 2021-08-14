@@ -44,7 +44,7 @@ func (s *grpcService) CreateProduct(ctx context.Context, req *readerService.Crea
 	}
 
 	if err := s.ps.Commands.CreateProduct.Handle(ctx, command); err != nil {
-		s.log.WarnMsg("CreateProduct", err)
+		s.log.WarnMsg("CreateProduct.Handle", err)
 		return nil, s.errResponse(codes.InvalidArgument, err)
 	}
 
@@ -65,7 +65,7 @@ func (s *grpcService) UpdateProduct(ctx context.Context, req *readerService.Upda
 	}
 
 	if err := s.ps.Commands.UpdateProduct.Handle(ctx, command); err != nil {
-		s.log.WarnMsg("UpdateProduct", err)
+		s.log.WarnMsg("UpdateProduct.Handle", err)
 		return nil, s.errResponse(codes.InvalidArgument, err)
 	}
 
@@ -93,7 +93,7 @@ func (s *grpcService) GetProductById(ctx context.Context, req *readerService.Get
 
 	product, err := s.ps.Queries.GetProductById.Handle(ctx, query)
 	if err != nil {
-		s.log.WarnMsg("GetProductById", err)
+		s.log.WarnMsg("GetProductById.Handle", err)
 		return nil, s.errResponse(codes.Internal, err)
 	}
 
@@ -112,7 +112,7 @@ func (s *grpcService) SearchProduct(ctx context.Context, req *readerService.Sear
 	query := queries.NewSearchProductQuery(req.GetSearch(), pq)
 	productsList, err := s.ps.Queries.SearchProduct.Handle(ctx, query)
 	if err != nil {
-		s.log.WarnMsg("SearchProduct", err)
+		s.log.WarnMsg("SearchProduct.Handle", err)
 		return nil, s.errResponse(codes.Internal, err)
 	}
 
@@ -133,7 +133,7 @@ func (s *grpcService) DeleteProductByID(ctx context.Context, req *readerService.
 	}
 
 	if err := s.ps.Commands.DeleteProduct.Handle(ctx, commands.NewDeleteProductCommand(productUUID)); err != nil {
-		s.log.WarnMsg("DeleteProduct", err)
+		s.log.WarnMsg("DeleteProduct.Handle", err)
 		return nil, s.errResponse(codes.Internal, err)
 	}
 
