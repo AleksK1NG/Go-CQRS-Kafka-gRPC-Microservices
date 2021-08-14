@@ -51,7 +51,7 @@ func (s *server) Run() error {
 	defer readerServiceConn.Close() // nolint: errcheck
 	rsClient := readerService.NewReaderServiceClient(readerServiceConn)
 
-	kafkaProducer := kafka.NewProducer(s.log, []string{"host.docker.internal:9092"})
+	kafkaProducer := kafka.NewProducer(s.log, s.cfg.Kafka.Brokers)
 	defer kafkaProducer.Close() // nolint: errcheck
 
 	s.ps = service.NewProductService(s.log, s.cfg, kafkaProducer, rsClient)

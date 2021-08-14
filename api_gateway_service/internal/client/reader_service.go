@@ -25,7 +25,7 @@ func NewReaderServiceConn(ctx context.Context, cfg *config.Config, im intercepto
 
 	readerServiceConn, err := grpc.DialContext(
 		ctx,
-		"reader_service:5003",
+		cfg.Grpc.ReaderServicePort,
 		grpc.WithUnaryInterceptor(im.ClientRequestLoggerInterceptor()),
 		grpc.WithInsecure(),
 		grpc.WithUnaryInterceptor(grpc_retry.UnaryClientInterceptor(opts...)),

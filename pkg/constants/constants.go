@@ -1,9 +1,17 @@
 package constants
 
 const (
-	GrpcPort   = "GRPC_PORT"
-	HttpPort   = "HTTP_PORT"
-	ConfigPath = "CONFIG_PATH"
+	GrpcPort       = "GRPC_PORT"
+	HttpPort       = "HTTP_PORT"
+	ConfigPath     = "CONFIG_PATH"
+	KafkaBrokers   = "KAFKA_BROKERS"
+	JaegerHostPort = "JAEGER_HOST"
+	RedisAddr      = "REDIS_ADDR"
+	MongoDbURI     = "MONGO_URI"
+	PostgresqlHost = "POSTGRES_HOST"
+	PostgresqlPort = "POSTGRES_PORT"
+
+	ReaderServicePort = "READER_SERVICE"
 
 	Yaml     = "yaml"
 	Redis    = "redis"
