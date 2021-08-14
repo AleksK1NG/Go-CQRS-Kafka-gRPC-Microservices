@@ -59,3 +59,4 @@ jaeger:
   enable: true
   serviceName: writer_service
   hostPort: "localhost:6831"
+  logSpans: false
