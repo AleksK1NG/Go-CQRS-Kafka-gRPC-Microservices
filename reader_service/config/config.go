@@ -85,31 +85,40 @@ func InitConfig() (*Config, error) {
 
 	grpcPort := os.Getenv(constants.GrpcPort)
 	if grpcPort != "" {
-		cfg.GRPC.Port = ":5003"
+		cfg.GRPC.Port = grpcPort
 	}
-	postgresHost := os.Getenv("POSTGRES_HOST")
+	postgresHost := os.Getenv(constants.PostgresqlHost)
 	if postgresHost != "" {
 		cfg.Postgresql.Host = postgresHost
 	}
-	postgresPort := os.Getenv("POSTGRES_PORT")
+	postgresPort := os.Getenv(constants.PostgresqlPort)
 	if postgresPort != "" {
 		cfg.Postgresql.Port = postgresPort
 	}
-	mongoURI := os.Getenv("MONGO_URI")
+	mongoURI := os.Getenv(constants.MongoDbURI)
 	if mongoURI != "" {
-		cfg.Mongo.URI = "mongodb://host.docker.internal:27017"
+		//cfg.Mongo.URI = "mongodb://host.docker.internal:27017"
+		cfg.Mongo.URI = mongoURI
 	}
-	redisAddr := os.Getenv("REDIS_ADDR")
+	redisAddr := os.Getenv(constants.RedisAddr)
 	if redisAddr != "" {
 		cfg.Redis.Addr = redisAddr
 	}
-	jaegerAddr := os.Getenv("JAEGER_HOST")
+	//jaegerAddr := os.Getenv("JAEGER_HOST")
+	//if jaegerAddr != "" {
+	//	cfg.Jaeger.HostPort = jaegerAddr
+	//}
+	//kafkaBrokers := os.Getenv("KAFKA_BROKERS")
+	//if kafkaBrokers != "" {
+	//	cfg.Kafka.Brokers = []string{"host.docker.internal:9092"}
+	//}
+	kafkaBrokers := os.Getenv(constants.KafkaBrokers)
+	if kafkaBrokers != "" {
+		cfg.Kafka.Brokers = []string{kafkaBrokers}
+	}
+	jaegerAddr := os.Getenv(constants.JaegerHostPort)
 	if jaegerAddr != "" {
 		cfg.Jaeger.HostPort = jaegerAddr
-	}
-	kafkaBrokers := os.Getenv("KAFKA_BROKERS")
-	if kafkaBrokers != "" {
-		cfg.Kafka.Brokers = []string{"host.docker.internal:9092"}
 	}
 
 	return cfg, nil

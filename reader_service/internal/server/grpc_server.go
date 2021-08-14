@@ -24,7 +24,7 @@ const (
 )
 
 func (s *server) newReaderGrpcServer() (func() error, *grpc.Server, error) {
-	l, err := net.Listen("tcp", "0.0.0.0:5003")
+	l, err := net.Listen("tcp", s.cfg.GRPC.Port)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "net.Listen")
 	}

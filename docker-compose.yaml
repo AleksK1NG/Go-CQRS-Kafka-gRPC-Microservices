@@ -19,6 +19,7 @@ services:
       - MONGO_URI=mongodb://host.docker.internal:27017
       - JAEGER_HOST=host.docker.internal:6831
       - KAFKA_BROKERS=host.docker.internal:9092
+      - READER_SERVICE=reader_service:5003
     depends_on:
       - redis
       - prometheus

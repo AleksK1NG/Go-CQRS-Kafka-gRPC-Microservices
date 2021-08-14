@@ -9,7 +9,6 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/probes"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	"github.com/pkg/errors"
-	"log"
 	"os"
 
 	"github.com/spf13/viper"
@@ -84,14 +83,17 @@ func InitConfig() (*Config, error) {
 	if httpPort != "" {
 		cfg.Http.Port = httpPort
 	}
-	kafkaBrokers := os.Getenv("KAFKA_BROKERS")
+	kafkaBrokers := os.Getenv(constants.KafkaBrokers)
 	if kafkaBrokers != "" {
-		log.Printf("BROKERS: %v", kafkaBrokers)
 		cfg.Kafka.Brokers = []string{kafkaBrokers}
 	}
-	jaegerAddr := os.Getenv("JAEGER_HOST")
+	jaegerAddr := os.Getenv(constants.JaegerHostPort)
 	if jaegerAddr != "" {
 		cfg.Jaeger.HostPort = jaegerAddr
+	}
+	readerServicePort := os.Getenv(constants.ReaderServicePort)
+	if readerServicePort != "" {
+		cfg.Grpc.ReaderServicePort = readerServicePort
 	}
 
 	return cfg, nil
