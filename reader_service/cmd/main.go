@@ -22,7 +22,7 @@ func main() {
 	appLogger.InitLogger()
 	appLogger.WithName("Reader Microservice")
 
-	appLogger.Infof("CFG: %+v", cfg)
+	appLogger.Infof("CFG: %+v", cfg.Kafka)
 
 	s := server.NewServer(appLogger, cfg)
 	appLogger.Fatal(s.Run())

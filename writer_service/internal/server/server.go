@@ -67,7 +67,7 @@ func (s *server) Run() error {
 	if err != nil {
 		return errors.Wrap(err, "NewScmGrpcServer")
 	}
-	defer closeGrpcServer() // nolint: errcheck
+	//defer closeGrpcServer() // nolint: errcheck
 
 	if err := s.connectKafkaBrokers(ctx); err != nil {
 		return errors.Wrap(err, "s.connectKafkaBrokers")
@@ -92,6 +92,7 @@ func (s *server) Run() error {
 
 	<-ctx.Done()
 	grpcServer.GracefulStop()
-	s.log.Info("Products Writer Microservice server exited properly")
+	closeGrpcServer()
+	s.log.Info("Writer Microservice server exited properly")
 	return nil
 }
