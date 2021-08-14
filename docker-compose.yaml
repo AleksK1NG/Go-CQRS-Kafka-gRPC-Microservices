@@ -9,6 +9,7 @@ services:
     ports:
       - "5001:5001"
       - "3001:3001"
+      - "8001:8001"
     volumes:
       - ./:/app
     restart: always
@@ -39,6 +40,7 @@ services:
     ports:
       - "5003:5003"
       - "3003:3003"
+      - "8003:8003"
     volumes:
       - ./:/app
     restart: always
@@ -68,6 +70,7 @@ services:
     ports:
       - "5002:5002"
       - "3002:3002"
+      - "8002:8002"
     volumes:
       - ./:/app
     restart: always
@@ -97,7 +100,7 @@ services:
     command:
       - --config.file=/etc/prometheus/prometheus.yml
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus_docker.yml:/etc/prometheus/prometheus.yml:ro
     networks: [ "microservices" ]
 
   node_exporter:
