@@ -12,7 +12,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
-	readerService "github.com/AleksK1NG/cqrs-microservices/product_reader_service/proto/product_reader"
+	readerService "github.com/AleksK1NG/cqrs-microservices/reader_service/proto/product_reader"
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"github.com/opentracing/opentracing-go"

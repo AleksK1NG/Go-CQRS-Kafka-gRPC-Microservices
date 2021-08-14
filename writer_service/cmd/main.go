@@ -2,14 +2,14 @@ package main
 
 import (
 	"flag"
-	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/config"
-	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/internal/server"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
+	"github.com/AleksK1NG/cqrs-microservices/writer_service/config"
+	"github.com/AleksK1NG/cqrs-microservices/writer_service/internal/server"
 	"log"
 )
 
 func main() {
-	log.Println("Starting API_Gateway microservice")
+	log.Println("Starting Writer microservice")
 
 	flag.Parse()
 
@@ -20,7 +20,7 @@ func main() {
 
 	appLogger := logger.NewAppLogger(cfg.Logger)
 	appLogger.InitLogger()
-	appLogger.WithName("API_Gateway")
+	appLogger.WithName("Writer Microservice")
 
 	appLogger.Infof("CFG: %+v", cfg)
 

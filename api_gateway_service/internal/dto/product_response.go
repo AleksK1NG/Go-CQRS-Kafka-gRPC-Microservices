@@ -1,7 +1,7 @@
 package dto
 
 import (
-	readerService "github.com/AleksK1NG/cqrs-microservices/product_reader_service/proto/product_reader"
+	readerService "github.com/AleksK1NG/cqrs-microservices/reader_service/proto/product_reader"
 	"time"
 )
 

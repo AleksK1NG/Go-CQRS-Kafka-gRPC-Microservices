@@ -6,7 +6,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/internal/products/queries"
 	kafkaClient "github.com/AleksK1NG/cqrs-microservices/pkg/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
-	readerService "github.com/AleksK1NG/cqrs-microservices/product_reader_service/proto/product_reader"
+	readerService "github.com/AleksK1NG/cqrs-microservices/reader_service/proto/product_reader"
 )
 
 type ProductService struct {

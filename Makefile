@@ -4,10 +4,10 @@ run_api_gateway:
 	go run api_gateway_service/cmd/main.go -config=./api_gateway_service/config/config.yaml
 
 run_writer_microservice:
-	go run product_writer_service/cmd/main.go -config=./product_writer_service/config/config.yaml
+	go run writer_service/cmd/main.go -config=./writer_service/config/config.yaml
 
 run_reader_microservice:
-	go run product_reader_service/cmd/main.go -config=./product_reader_service/config/config.yaml
+	go run writer_service/cmd/main.go -config=./writer_service/config/config.yaml
 
 # ==============================================================================
 # Docker
@@ -114,16 +114,16 @@ proto_kafka:
 
 proto_writer:
 	@echo Generating product writer microservice proto
-	cd product_writer_service/proto/product_writer && protoc --go_out=. --go-grpc_opt=require_unimplemented_servers=false --go-grpc_out=. product_writer.proto
+	cd writer_service/proto/product_writer && protoc --go_out=. --go-grpc_opt=require_unimplemented_servers=false --go-grpc_out=. product_writer.proto
 
 proto_writer_message:
 	@echo Generating product writer messages microservice proto
-	cd product_writer_service/proto/product_writer && protoc --go_out=. --go-grpc_opt=require_unimplemented_servers=false --go-grpc_out=. product_writer_messages.proto
+	cd writer_service/proto/product_writer && protoc --go_out=. --go-grpc_opt=require_unimplemented_servers=false --go-grpc_out=. product_writer_messages.proto
 
 proto_reader:
 	@echo Generating product reader microservice proto
-	cd product_reader_service/proto/product_reader && protoc --go_out=. --go-grpc_opt=require_unimplemented_servers=false --go-grpc_out=. product_reader.proto
+	cd reader_service/proto/product_reader && protoc --go_out=. --go-grpc_opt=require_unimplemented_servers=false --go-grpc_out=. product_reader.proto
 
 proto_reader_message:
 	@echo Generating product reader messages microservice proto
-	cd product_reader_service/proto/product_reader && protoc --go_out=. --go-grpc_opt=require_unimplemented_servers=false --go-grpc_out=. product_reader_messages.proto
+	cd reader_service/proto/product_reader && protoc --go_out=. --go-grpc_opt=require_unimplemented_servers=false --go-grpc_out=. product_reader_messages.proto

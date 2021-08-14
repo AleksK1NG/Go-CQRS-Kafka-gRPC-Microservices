@@ -1,6 +1,6 @@
 package dto
 
-import readerService "github.com/AleksK1NG/cqrs-microservices/product_reader_service/proto/product_reader"
+import readerService "github.com/AleksK1NG/cqrs-microservices/reader_service/proto/product_reader"
 
 type ProductsListResponse struct {
 	TotalCount int64              `json:"totalCount" bson:"totalCount"`
