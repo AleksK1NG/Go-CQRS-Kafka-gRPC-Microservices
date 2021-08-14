@@ -48,3 +48,4 @@ jaeger:
   enable: true
   serviceName: api_gateway_service
   hostPort: "localhost:6831"
+  logSpans: false
