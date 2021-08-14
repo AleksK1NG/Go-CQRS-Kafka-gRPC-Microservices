@@ -5,7 +5,7 @@ services:
     container_name: api_gateway_service
     build:
       context: .
-      dockerfile: api_gateway.Dockerfile
+      dockerfile: docker/api_gateway.Dockerfile
     ports:
       - "5001:5001"
       - "3001:3001"
@@ -36,7 +36,7 @@ services:
     container_name: reader_service
     build:
       context: .
-      dockerfile: reader_service.Dockerfile
+      dockerfile: docker/reader_service.Dockerfile
     ports:
       - "5003:5003"
       - "3003:3003"
@@ -66,7 +66,7 @@ services:
     container_name: writer_service
     build:
       context: .
-      dockerfile: writer_service.Dockerfile
+      dockerfile: docker/writer_service.Dockerfile
     ports:
       - "5002:5002"
       - "3002:3002"
