@@ -9,8 +9,6 @@ import (
 )
 
 func main() {
-	log.Println("Starting Writer microservice")
-
 	flag.Parse()
 
 	cfg, err := config.InitConfig()
@@ -21,8 +19,6 @@ func main() {
 	appLogger := logger.NewAppLogger(cfg.Logger)
 	appLogger.InitLogger()
 	appLogger.WithName("Writer_service")
-
-	appLogger.Infof("CFG: %+v", cfg)
 
 	s := server.NewServer(appLogger, cfg)
 	appLogger.Fatal(s.Run())
