@@ -17,7 +17,11 @@ var doc = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "Alexander Bryksin",
+            "url": "https://github.com/AleksK1NG",
+            "email": "alexander.bryksin@yandex.ru"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -173,10 +177,7 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.UpdateProductDto"
-                        }
+                        "description": ""
                     }
                 }
             }

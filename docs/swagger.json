@@ -1,7 +1,11 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "contact": {
+            "name": "Alexander Bryksin",
+            "url": "https://github.com/AleksK1NG",
+            "email": "alexander.bryksin@yandex.ru"
+        }
     },
     "paths": {
         "/products": {
@@ -154,10 +158,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.UpdateProductDto"
-                        }
+                        "description": ""
                     }
                 }
             }

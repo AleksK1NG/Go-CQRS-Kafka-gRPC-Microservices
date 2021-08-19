@@ -8,6 +8,9 @@ import (
 	"log"
 )
 
+// @contact.name Alexander Bryksin
+// @contact.url https://github.com/AleksK1NG
+// @contact.email alexander.bryksin@yandex.ru
 func main() {
 	log.Println("Starting API_Gateway microservice")
 

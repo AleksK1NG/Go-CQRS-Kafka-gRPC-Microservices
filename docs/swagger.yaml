@@ -55,7 +55,10 @@ definitions:
     - productId
     type: object
 info:
-  contact: {}
+  contact:
+    email: alexander.bryksin@yandex.ru
+    name: Alexander Bryksin
+    url: https://github.com/AleksK1NG
 paths:
   /products:
     post:
@@ -87,9 +90,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.UpdateProductDto'
+          description: ""
       summary: Delete product
       tags:
       - Products
