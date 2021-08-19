@@ -41,6 +41,14 @@ func NewProductsHandlers(
 	return &productsHandlers{group: group, log: log, mw: mw, cfg: cfg, ps: ps, v: v, metrics: metrics}
 }
 
+// CreateProduct
+// @Tags Products
+// @Summary Create product
+// @Description Create new product item
+// @Accept json
+// @Produce json
+// @Success 201 {object} dto.CreateProductResponseDto
+// @Router /products [post]
 func (h *productsHandlers) CreateProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		h.metrics.CreateProductHttpRequests.Inc()
@@ -73,6 +81,15 @@ func (h *productsHandlers) CreateProduct() echo.HandlerFunc {
 	}
 }
 
+// GetProductByID
+// @Tags Products
+// @Summary Get product
+// @Description Get product by id
+// @Accept json
+// @Produce json
+// @Param id path string true "Product ID"
+// @Success 200 {object} dto.ProductResponse
+// @Router /products/{id} [get]
 func (h *productsHandlers) GetProductByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		h.metrics.GetProductByIdHttpRequests.Inc()
@@ -100,6 +117,17 @@ func (h *productsHandlers) GetProductByID() echo.HandlerFunc {
 	}
 }
 
+// SearchProduct
+// @Tags Products
+// @Summary Search product
+// @Description Get product by name with pagination
+// @Accept json
+// @Produce json
+// @Param search query string false "search text"
+// @Param page query string false "page number"
+// @Param size query string false "number of elements"
+// @Success 200 {object} dto.ProductsListResponse
+// @Router /products/search [get]
 func (h *productsHandlers) SearchProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		h.metrics.SearchProductHttpRequests.Inc()
@@ -122,6 +150,15 @@ func (h *productsHandlers) SearchProduct() echo.HandlerFunc {
 	}
 }
 
+// UpdateProduct
+// @Tags Products
+// @Summary Update product
+// @Description Update existing product
+// @Accept json
+// @Produce json
+// @Param id path string true "Product ID"
+// @Success 200 {object} dto.UpdateProductDto
+// @Router /products/{id} [put]
 func (h *productsHandlers) UpdateProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		h.metrics.UpdateProductHttpRequests.Inc()
@@ -160,6 +197,15 @@ func (h *productsHandlers) UpdateProduct() echo.HandlerFunc {
 	}
 }
 
+// DeleteProduct
+// @Tags Products
+// @Summary Delete product
+// @Description Delete existing product
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.UpdateProductDto
+// @Param id path string true "Product ID"
+// @Router /products/{id} [delete]
 func (h *productsHandlers) DeleteProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		h.metrics.DeleteProductHttpRequests.Inc()
