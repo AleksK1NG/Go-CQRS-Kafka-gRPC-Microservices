@@ -203,7 +203,7 @@ func (h *productsHandlers) UpdateProduct() echo.HandlerFunc {
 // @Description Delete existing product
 // @Accept json
 // @Produce json
-// @Success 200 {object} dto.UpdateProductDto
+// @Success 200 ""
 // @Param id path string true "Product ID"
 // @Router /products/{id} [delete]
 func (h *productsHandlers) DeleteProduct() echo.HandlerFunc {
