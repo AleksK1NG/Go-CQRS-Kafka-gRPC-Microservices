@@ -12,8 +12,6 @@ import (
 // @contact.url https://github.com/AleksK1NG
 // @contact.email alexander.bryksin@yandex.ru
 func main() {
-	log.Println("Starting API_Gateway microservice")
-
 	flag.Parse()
 
 	cfg, err := config.InitConfig()
@@ -24,8 +22,6 @@ func main() {
 	appLogger := logger.NewAppLogger(cfg.Logger)
 	appLogger.InitLogger()
 	appLogger.WithName("API_Gateway")
-
-	appLogger.Infof("CFG: %+v", cfg)
 
 	s := server.NewServer(appLogger, cfg)
 	appLogger.Fatal(s.Run())
