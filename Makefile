@@ -48,7 +48,7 @@ deps-reset:
 	go mod tidy
 
 deps-upgrade:
-	go get $(go list -f '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}' -m all)
+	#go get $(go list -f '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}' -m all)
 	go get -u -t -d -v ./...
 	go mod tidy
 

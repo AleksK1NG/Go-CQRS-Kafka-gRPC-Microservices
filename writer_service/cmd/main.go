@@ -20,7 +20,7 @@ func main() {
 
 	appLogger := logger.NewAppLogger(cfg.Logger)
 	appLogger.InitLogger()
-	appLogger.WithName("Writer Microservice")
+	appLogger.WithName("Writer_service")
 
 	appLogger.Infof("CFG: %+v", cfg)
 
