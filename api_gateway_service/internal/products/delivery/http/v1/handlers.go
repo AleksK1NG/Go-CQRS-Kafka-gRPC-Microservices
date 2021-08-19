@@ -8,6 +8,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/internal/products/commands"
 	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/internal/products/queries"
 	"github.com/AleksK1NG/cqrs-microservices/api_gateway_service/internal/products/service"
+	"github.com/AleksK1NG/cqrs-microservices/pkg/constants"
 	httpErrors "github.com/AleksK1NG/cqrs-microservices/pkg/http_errors"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/logger"
 	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
@@ -97,7 +98,7 @@ func (h *productsHandlers) GetProductByID() echo.HandlerFunc {
 		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.GetProductByID")
 		defer span.Finish()
 
-		productUUID, err := uuid.FromString(c.Param("id"))
+		productUUID, err := uuid.FromString(c.Param(constants.ID))
 		if err != nil {
 			h.log.WarnMsg("uuid.FromString", err)
 			h.traceErr(span, err)
@@ -135,9 +136,9 @@ func (h *productsHandlers) SearchProduct() echo.HandlerFunc {
 		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.SearchProduct")
 		defer span.Finish()
 
-		pq := utils.NewPaginationFromQueryParams(c.QueryParam("size"), c.QueryParam("page"))
+		pq := utils.NewPaginationFromQueryParams(c.QueryParam(constants.Size), c.QueryParam(constants.Page))
 
-		query := queries.NewSearchProductQuery(c.QueryParam("search"), pq)
+		query := queries.NewSearchProductQuery(c.QueryParam(constants.Search), pq)
 		response, err := h.ps.Queries.SearchProduct.Handle(ctx, query)
 		if err != nil {
 			h.log.WarnMsg("SearchProduct", err)
@@ -166,7 +167,7 @@ func (h *productsHandlers) UpdateProduct() echo.HandlerFunc {
 		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.UpdateProduct")
 		defer span.Finish()
 
-		productUUID, err := uuid.FromString(c.Param("id"))
+		productUUID, err := uuid.FromString(c.Param(constants.ID))
 		if err != nil {
 			h.log.WarnMsg("uuid.FromString", err)
 			h.traceErr(span, err)
@@ -213,7 +214,7 @@ func (h *productsHandlers) DeleteProduct() echo.HandlerFunc {
 		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.DeleteProduct")
 		defer span.Finish()
 
-		productUUID, err := uuid.FromString(c.Param("id"))
+		productUUID, err := uuid.FromString(c.Param(constants.ID))
 		if err != nil {
 			h.log.WarnMsg("uuid.FromString", err)
 			h.traceErr(span, err)

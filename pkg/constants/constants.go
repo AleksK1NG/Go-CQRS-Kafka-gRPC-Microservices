@@ -37,4 +37,9 @@ const (
 	WorkerID  = "workerID"
 	Offset    = "offset"
 	Time      = "time"
+
+	Page   = "page"
+	Size   = "size"
+	Search = "search"
+	ID     = "id"
 )
