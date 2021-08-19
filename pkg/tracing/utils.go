@@ -2,14 +2,11 @@ package tracing
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/labstack/echo/v4"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
-	"github.com/pkg/errors"
 	"github.com/segmentio/kafka-go"
 	"google.golang.org/grpc/metadata"
-	"strings"
 )
 
 func StartHttpServerTracerSpan(c echo.Context, operationName string) (context.Context, opentracing.Span) {
@@ -66,31 +63,6 @@ func StartKafkaConsumerTracerSpan(ctx context.Context, headers []kafka.Header, o
 	ctx = opentracing.ContextWithSpan(ctx, serverSpan)
 
 	return ctx, serverSpan
-}
-
-func TextMapCarrierToBinary(textMap opentracing.TextMapCarrier) ([]byte, error) {
-	return json.Marshal(textMap)
-}
-
-func TextMapCarrierFromBinary(textMapBytes []byte) (opentracing.TextMapCarrier, error) {
-	m := make(map[string]string)
-	if err := json.Unmarshal(textMapBytes, &m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func TextMapCarrierFromKafkaHeaders(headers []kafka.Header) (opentracing.TextMapCarrier, error) {
-	for _, header := range headers {
-		if strings.EqualFold(header.Key, "tracing") {
-			carrierFromBinary, err := TextMapCarrierFromBinary(header.Value)
-			if err != nil {
-				return nil, err
-			}
-			return carrierFromBinary, nil
-		}
-	}
-	return nil, errors.New("no tracing headers provided")
 }
 
 func TextMapCarrierToKafkaMessageHeaders(textMap opentracing.TextMapCarrier) []kafka.Header {
