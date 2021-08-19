@@ -1,3 +1,4 @@
+### Golang CQRS Kafka gRPC Postgresql MongoDB Redis microservices example 👋
 
 ### Jaeger UI:
 
@@ -11,4 +12,16 @@ http://localhost:9090
 
 http://localhost:3000
 
+### Swagger UI:
+
+https://localhost:5001/swagger/index.html
+
+
+For local development:
+```
+make migrate_up // run sql migrations
+make mongo // run mongo init scripts
+make swagger // generate swagger documentation
+make local or docker_dev // for run docker compose files
+```
 
