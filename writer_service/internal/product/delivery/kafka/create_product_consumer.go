@@ -5,9 +5,20 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	kafkaMessages "github.com/AleksK1NG/cqrs-microservices/proto/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/writer_service/internal/product/commands"
+	"github.com/avast/retry-go"
 	uuid "github.com/satori/go.uuid"
 	"github.com/segmentio/kafka-go"
 	"google.golang.org/protobuf/proto"
+	"time"
+)
+
+const (
+	retryAttempts = 3
+	retryDelay    = 300 * time.Millisecond
+)
+
+var (
+	retryOptions = []retry.Option{retry.Attempts(retryAttempts), retry.Delay(retryDelay), retry.DelayType(retry.BackOffDelay)}
 )
 
 func (s *productMessageProcessor) processCreateProduct(ctx context.Context, r *kafka.Reader, m kafka.Message) {
@@ -37,10 +48,11 @@ func (s *productMessageProcessor) processCreateProduct(ctx context.Context, r *k
 		return
 	}
 
-	err = s.ps.Commands.CreateProduct.Handle(ctx, command)
-	if err != nil {
-		s.metrics.ErrorKafkaMessages.Inc()
+	if err := retry.Do(func() error {
+		return s.ps.Commands.CreateProduct.Handle(ctx, command)
+	}, append(retryOptions, retry.Context(ctx))...); err != nil {
 		s.log.WarnMsg("CreateProduct.Handle", err)
+		s.metrics.ErrorKafkaMessages.Inc()
 		return
 	}
 

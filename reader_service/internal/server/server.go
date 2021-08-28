@@ -65,6 +65,7 @@ func (s *server) Run() error {
 	s.ps = service.NewProductService(s.log, s.cfg, mongoRepo, redisRepo)
 
 	readerMessageProcessor := readerKafka.NewReaderMessageProcessor(s.log, s.cfg, s.v, s.ps, s.metrics)
+
 	s.log.Info("Starting Reader Kafka consumers")
 	cg := kafkaClient.NewConsumerGroup(s.cfg.Kafka.Brokers, s.cfg.Kafka.GroupID, s.log)
 	go cg.ConsumeTopic(ctx, s.getConsumerGroupTopics(), readerKafka.PoolSize, readerMessageProcessor.ProcessMessages)
@@ -94,6 +95,5 @@ func (s *server) Run() error {
 
 	<-ctx.Done()
 	grpcServer.GracefulStop()
-	s.log.Info("Products Reader Microservice server exited properly")
 	return nil
 }

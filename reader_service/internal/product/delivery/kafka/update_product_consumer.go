@@ -5,6 +5,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	kafkaMessages "github.com/AleksK1NG/cqrs-microservices/proto/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/reader_service/internal/product/commands"
+	"github.com/avast/retry-go"
 	"github.com/segmentio/kafka-go"
 	"google.golang.org/protobuf/proto"
 )
@@ -30,8 +31,10 @@ func (s *readerMessageProcessor) processProductUpdated(ctx context.Context, r *k
 		return
 	}
 
-	if err := s.ps.Commands.UpdateProduct.Handle(ctx, command); err != nil {
-		s.log.WarnMsg("UpdateProduct", err)
+	if err := retry.Do(func() error {
+		return s.ps.Commands.UpdateProduct.Handle(ctx, command)
+	}, append(retryOptions, retry.Context(ctx))...); err != nil {
+		s.log.WarnMsg("UpdateProduct.Handle", err)
 		s.metrics.ErrorKafkaMessages.Inc()
 		return
 	}

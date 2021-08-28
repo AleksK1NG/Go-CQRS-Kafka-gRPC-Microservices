@@ -14,8 +14,7 @@ http://localhost:3000
 
 ### Swagger UI:
 
-https://localhost:5001/swagger/index.html
-
+http://localhost:5001/swagger/index.html
 
 For local development:
 ```
