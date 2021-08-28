@@ -84,6 +84,5 @@ func (s *server) Run() error {
 		s.log.WarnMsg("echo.Server.Shutdown", err)
 	}
 
-	s.log.Info("API Gateway server exited properly")
 	return nil
 }

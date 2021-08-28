@@ -5,6 +5,7 @@ import (
 	"github.com/AleksK1NG/cqrs-microservices/pkg/tracing"
 	kafkaMessages "github.com/AleksK1NG/cqrs-microservices/proto/kafka"
 	"github.com/AleksK1NG/cqrs-microservices/reader_service/internal/product/commands"
+	"github.com/avast/retry-go"
 	uuid "github.com/satori/go.uuid"
 	"github.com/segmentio/kafka-go"
 	"google.golang.org/protobuf/proto"
@@ -31,7 +32,15 @@ func (s *readerMessageProcessor) processProductDeleted(ctx context.Context, r *k
 	}
 
 	command := commands.NewDeleteProductCommand(productUUID)
-	if err := s.ps.Commands.DeleteProduct.Handle(ctx, command); err != nil {
+	if err := s.v.StructCtx(ctx, command); err != nil {
+		s.log.WarnMsg("validate", err)
+		s.commitErrMessage(ctx, r, m)
+		return
+	}
+
+	if err := retry.Do(func() error {
+		return s.ps.Commands.DeleteProduct.Handle(ctx, command)
+	}, append(retryOptions, retry.Context(ctx))...); err != nil {
 		s.log.WarnMsg("DeleteProduct.Handle", err)
 		s.metrics.ErrorKafkaMessages.Inc()
 		return
