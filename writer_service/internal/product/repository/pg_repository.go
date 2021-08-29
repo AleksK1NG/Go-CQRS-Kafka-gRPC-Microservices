@@ -82,11 +82,10 @@ func (p *productRepository) DeleteProductByID(ctx context.Context, uuid uuid.UUI
 	span, ctx := opentracing.StartSpanFromContext(ctx, "productRepository.DeleteProductByID")
 	defer span.Finish()
 
-	result, err := p.db.Exec(ctx, deleteProductByIdQuery, uuid)
+	_, err := p.db.Exec(ctx, deleteProductByIdQuery, uuid)
 	if err != nil {
 		return errors.Wrap(err, "Exec")
 	}
 
-	p.log.Debugf("deleted rows: %v", result.RowsAffected())
 	return nil
 }

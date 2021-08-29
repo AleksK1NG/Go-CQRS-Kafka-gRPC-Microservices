@@ -115,7 +115,7 @@ func (p *mongoRepository) Search(ctx context.Context, search string, pagination 
 		p.traceErr(span, err)
 		return nil, errors.Wrap(err, "Find")
 	}
-	defer cursor.Close(ctx)
+	defer cursor.Close(ctx) // nolint: errcheck
 
 	products := make([]*models.Product, 0, pagination.GetSize())
 

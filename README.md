@@ -28,7 +28,9 @@ http://localhost:3000
 
 http://localhost:5001/swagger/index.html
 
+
 For local development 🙌👨‍💻🚀:
+
 ```
 make migrate_up // run sql migrations
 make mongo // run mongo init scripts

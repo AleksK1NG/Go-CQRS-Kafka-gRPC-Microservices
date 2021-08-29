@@ -48,7 +48,6 @@ deps-reset:
 	go mod tidy
 
 deps-upgrade:
-	#go get $(go list -f '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}' -m all)
 	go get -u -t -d -v ./...
 	go mod tidy
 
@@ -64,7 +63,7 @@ run-linter:
 	golangci-lint run ./...
 
 # ==============================================================================
-# PPROF http://localhost:6060/debug/pprof
+# PPROF
 
 pprof_heap:
 	go tool pprof -http :8006 http://localhost:6060/debug/pprof/heap?seconds=10
@@ -111,6 +110,9 @@ mongo:
 swagger:
 	@echo Starting swagger generating
 	swag init -g **/**/*.go
+
+# ==============================================================================
+# Proto
 
 proto_kafka:
 	@echo Generating kafka proto

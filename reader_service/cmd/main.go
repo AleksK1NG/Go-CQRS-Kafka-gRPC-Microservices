@@ -18,7 +18,7 @@ func main() {
 
 	appLogger := logger.NewAppLogger(cfg.Logger)
 	appLogger.InitLogger()
-	appLogger.WithName("Reader_service")
+	appLogger.WithName("ReaderService")
 
 	s := server.NewServer(appLogger, cfg)
 	appLogger.Fatal(s.Run())
